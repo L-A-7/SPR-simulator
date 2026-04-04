@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPR Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <h1>SPR Graphical Simulator</h1>
+    <p>Surface Plasmon Resonance — Kretschmann configuration</p>
+  </header>
+
+  <!-- Diagram + side controls -->
+  <div id="main-row">
+
+    <div id="canvas-wrap">
+      <canvas id="diagram" width="700" height="430"></canvas>
+    </div>
+
+    <div id="side-panel">
+
+      <!-- Angle control -->
+      <div class="panel-box">
+        <h2>Angle</h2>
+        <div class="angle-big"><span id="angle-display">65.0</span>°</div>
+        <div class="field">
+          <input type="range" id="angle-slider"
+                 min="5" max="85" step="0.5" value="65" />
+        </div>
+        <div class="field">
+          <label>Manual entry (°)</label>
+          <input type="number" id="angle-input"
+                 min="5" max="85" step="0.1" value="65" />
+        </div>
+      </div>
+
+      <!-- Physics parameters -->
+      <div class="panel-box">
+        <h2>Parameters</h2>
+        <div class="field">
+          <label>λ (nm)</label>
+          <input type="number" id="lam-nm" value="632.8" min="400" max="1100" step="0.1" />
+        </div>
+        <div class="field">
+          <label>Gold thickness (nm)</label>
+          <input type="number" id="gold-nm" value="50" min="1" max="200" step="1" />
+        </div>
+        <div class="field">
+          <label>Prism n</label>
+          <input type="number" id="prism-n" value="1.63" min="1.4" max="2.0" step="0.001" />
+        </div>
+        <div class="field">
+          <label>Top medium n</label>
+          <input type="number" id="top-n" value="1.333" min="1.0" max="1.8" step="0.001" />
+        </div>
+      </div>
+
+      <!-- SPR readout -->
+      <div class="panel-box">
+        <h2>Observables</h2>
+        <div id="readout">
+          <div class="readout-item">
+            <span class="readout-label">Rp (p-pol)</span>
+            <span class="readout-value rv-rp"   id="rv-rp">—</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-label">Rs (s-pol)</span>
+            <span class="readout-value rv-rs"   id="rv-rs">—</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-label">Absorption</span>
+            <span class="readout-value rv-abs"  id="rv-abs">—</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-label">Field enh.</span>
+            <span class="readout-value rv-field" id="rv-field">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan control -->
+      <div class="panel-box">
+        <h2>Angle Scan</h2>
+        <div class="field">
+          <label>From (°)</label>
+          <input type="number" id="scan-min" value="35" min="0" max="89" step="1" />
+        </div>
+        <div class="field">
+          <label>To (°)</label>
+          <input type="number" id="scan-max" value="80" min="1" max="89" step="1" />
+        </div>
+        <div class="field">
+          <label>Steps</label>
+          <input type="number" id="scan-steps" value="150" min="20" max="500" step="10" />
+        </div>
+        <button class="btn btn-scan" id="btn-scan">▶ Run Scan</button>
+        <button class="btn btn-stop" id="btn-stop">■ Stop</button>
+        <div id="scan-status"></div>
+      </div>
+
+    </div><!-- /side-panel -->
+  </div><!-- /main-row -->
+
+  <!-- Charts -->
+  <div id="charts-panel">
+    <h2>Scan Results</h2>
+    <div id="charts"></div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Plotly (CDN — swap for local copy on VPS if needed) -->
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

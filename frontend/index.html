@@ -9,36 +9,12 @@
 <body>
 <div id="app">
 
-  <header>
-    <h1>SPR Graphical Simulator</h1>
-    <p>Surface Plasmon Resonance — Kretschmann configuration</p>
-  </header>
+  <div id="content-row">
 
-  <!-- Diagram + side controls -->
-  <div id="main-row">
+    <!-- ── Left panel ────────────────────────────────────────── -->
+    <div id="left-panel">
 
-    <div id="canvas-wrap">
-      <canvas id="diagram" width="700" height="430"></canvas>
-    </div>
-
-    <div id="side-panel">
-
-      <!-- Angle control -->
-      <div class="panel-box">
-        <h2>Angle</h2>
-        <div class="angle-big"><span id="angle-display">65.0</span>°</div>
-        <div class="field">
-          <input type="range" id="angle-slider"
-                 min="5" max="85" step="0.5" value="65" />
-        </div>
-        <div class="field">
-          <label>Manual entry (°)</label>
-          <input type="number" id="angle-input"
-                 min="5" max="85" step="0.1" value="65" />
-        </div>
-      </div>
-
-      <!-- Physics parameters -->
+      <!-- Physics parameters (first) -->
       <div class="panel-box">
         <h2>Parameters</h2>
         <div class="field">
@@ -59,30 +35,22 @@
         </div>
       </div>
 
-      <!-- SPR readout -->
+      <!-- Angle control (second) -->
       <div class="panel-box">
-        <h2>Observables</h2>
-        <div id="readout">
-          <div class="readout-item">
-            <span class="readout-label">Rp (p-pol)</span>
-            <span class="readout-value rv-rp"   id="rv-rp">—</span>
-          </div>
-          <div class="readout-item">
-            <span class="readout-label">Rs (s-pol)</span>
-            <span class="readout-value rv-rs"   id="rv-rs">—</span>
-          </div>
-          <div class="readout-item">
-            <span class="readout-label">Absorption</span>
-            <span class="readout-value rv-abs"  id="rv-abs">—</span>
-          </div>
-          <div class="readout-item">
-            <span class="readout-label">Field enh.</span>
-            <span class="readout-value rv-field" id="rv-field">—</span>
-          </div>
+        <h2>Angle</h2>
+        <div class="angle-big"><span id="angle-display">65.0</span>°</div>
+        <div class="field">
+          <input type="range" id="angle-slider"
+                 min="5" max="85" step="0.5" value="65" />
+        </div>
+        <div class="field">
+          <label>Manual entry (°)</label>
+          <input type="number" id="angle-input"
+                 min="5" max="85" step="0.1" value="65" />
         </div>
       </div>
 
-      <!-- Scan control -->
+      <!-- Angle scan (third) -->
       <div class="panel-box">
         <h2>Angle Scan</h2>
         <div class="field">
@@ -102,18 +70,68 @@
         <div id="scan-status"></div>
       </div>
 
-    </div><!-- /side-panel -->
-  </div><!-- /main-row -->
+    </div><!-- /left-panel -->
 
-  <!-- Charts -->
-  <div id="charts-panel">
-    <h2>Scan Results</h2>
-    <div id="charts"></div>
-  </div>
+    <!-- ── Main column ───────────────────────────────────────── -->
+    <div id="main-col">
+
+      <!-- Animation box: observables bar + canvas -->
+      <div id="main-anim-box">
+
+        <!-- Observables bar -->
+        <div id="obs-bar">
+          <span id="obs-title">SPR Simulator</span>
+          <span class="obs-sep">|</span>
+          <span class="obs-item">
+            <span class="obs-lbl">θ</span>
+            <span class="obs-val obs-theta" id="obs-theta">65.0</span><span class="obs-unit">°</span>
+          </span>
+          <span class="obs-sep">|</span>
+          <span class="obs-item">
+            <span class="obs-lbl">λ</span>
+            <span class="obs-val" id="obs-lam">632.8</span><span class="obs-unit"> nm</span>
+          </span>
+          <span class="obs-sep">|</span>
+          <span class="obs-item">
+            <span class="obs-lbl">Rp</span>
+            <span class="obs-val rv-rp" id="rv-rp">—</span>
+          </span>
+          <span class="obs-sep">|</span>
+          <span class="obs-item">
+            <span class="obs-lbl">Rs</span>
+            <span class="obs-val rv-rs" id="rv-rs">—</span>
+          </span>
+          <span class="obs-sep">|</span>
+          <span class="obs-item">
+            <span class="obs-lbl">Absorption</span>
+            <span class="obs-val rv-abs" id="rv-abs">—</span>
+          </span>
+          <span class="obs-sep">|</span>
+          <span class="obs-item">
+            <span class="obs-lbl">Field enh.</span>
+            <span class="obs-val rv-field" id="rv-field">—</span>
+          </span>
+        </div>
+
+        <!-- Canvas -->
+        <div id="canvas-wrap">
+          <canvas id="diagram" width="700" height="288"></canvas>
+        </div>
+
+      </div><!-- /main-anim-box -->
+
+      <!-- Scan results -->
+      <div id="charts-panel">
+        <h2>Scan Results</h2>
+        <div id="charts"></div>
+      </div>
+
+    </div><!-- /main-col -->
+
+  </div><!-- /content-row -->
 
 </div><!-- /app -->
 
-<!-- Plotly (CDN — swap for local copy on VPS if needed) -->
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script src="app.js"></script>
 </body>

@@ -9,10 +9,10 @@ const API = "";           // same origin — change to "http://localhost:8000" f
 //  Canvas geometry (logical px — CSS scales the element)
 // ============================================================
 const CW      = 700;      // canvas logical width
-const CH      = 430;      // canvas logical height
+const CH      = 288;      // canvas logical height
 const CX      = CW / 2;  // centre of the flat face (hit point of the beam)
-const CY      = 290;      // y of the flat face
-const R       = 195;      // half-disk radius
+const CY      = 154;      // y of the flat face  (CY + R must be < CH)
+const R       = 120;      // half-disk radius (80% of previous 150)
 const GOLD_H  = 7;        // visual gold thickness (px)
 const BEAM_EXT = 70;      // how far the beam extends outside the disk
 
@@ -37,6 +37,8 @@ const ctx          = canvas.getContext("2d");
 const angleDisplay = document.getElementById("angle-display");
 const angleSlider  = document.getElementById("angle-slider");
 const angleInput   = document.getElementById("angle-input");
+const obsTheta     = document.getElementById("obs-theta");
+const obsLam       = document.getElementById("obs-lam");
 const rvRp         = document.getElementById("rv-rp");
 const rvRs         = document.getElementById("rv-rs");
 const rvAbs        = document.getElementById("rv-abs");
@@ -331,10 +333,10 @@ function drawLabels(theta_deg) {
   ctx.save();
   ctx.font = "12px 'Segoe UI', sans-serif";
 
-  // Top medium label
+  // Top medium label — positioned in the lower part of the top-medium zone
   ctx.fillStyle = "rgba(100, 180, 255, 0.55)";
   ctx.textAlign = "left";
-  ctx.fillText("Top medium (n = " + _paramVal("top-n") + ")", 10, 18);
+  ctx.fillText("Top medium (n = " + _paramVal("top-n") + ")", 10, CY - GOLD_H - 14);
 
   // Gold label
   ctx.fillStyle = "rgba(220, 200, 50, 0.75)";
@@ -434,6 +436,7 @@ function setAngleUI(a) {
   angle = Math.max(5, Math.min(85, a));
   const disp = angle.toFixed(1);
   angleDisplay.textContent = disp;
+  obsTheta.textContent     = disp;
   angleSlider.value = angle;
   angleInput.value  = disp;
   // Instant visual update from lookup table — no HTTP round-trip
@@ -587,6 +590,7 @@ angleInput.addEventListener("change", () => {
 // Rebuild lookup table when physics params change, then redraw
 ["lam-nm", "gold-nm", "prism-n", "top-n"].forEach((id) => {
   document.getElementById(id).addEventListener("change", async () => {
+    if (id === "lam-nm") obsLam.textContent = _paramVal("lam-nm");
     await buildLookupTable();
     setAngleUI(angle);
   });
@@ -676,6 +680,7 @@ function finishScan(msg) {
 initChart();
 
 // Build lookup table, then draw initial state
+obsLam.textContent = _paramVal("lam-nm");
 (async () => {
   await buildLookupTable();
   setAngleUI(angle);

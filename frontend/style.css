@@ -10,66 +10,119 @@
   --text:      #c8d8f0;
   --text-dim:  #5a6a88;
   --red:       #ff4d4d;
-  --green:     #3ecf8e;
   --gold:      #c8a200;
   --radius:    8px;
 }
 
 html, body {
-  height: 100%;
   background: var(--bg);
   color: var(--text);
   font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 14px;
 }
 
-/* ===== Layout ============================================================ */
+/* ===== App shell ========================================================= */
 #app {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 20px 16px 40px;
-  min-height: 100vh;
+  gap: 10px;
+  padding: 10px 20px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-header {
-  width: 100%;
-  max-width: 900px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
-}
-
-header h1 {
-  font-size: 18px;
-  font-weight: 600;
+/* ===== Obs-bar title ===================================================== */
+#obs-title {
+  font-size: 13px;
+  font-weight: 700;
   color: var(--accent);
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  margin-right: 2px;
 }
 
-header p {
-  font-size: 12px;
-  color: var(--text-dim);
-  margin-top: 2px;
-}
-
-/* ===== Main content (diagram + controls) ================================= */
-#main-row {
+/* ===== Content row (left panel + main column) =========================== */
+#content-row {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: flex-start;
-  width: 100%;
-  max-width: 900px;
 }
 
-/* ===== Canvas ============================================================ */
-#canvas-wrap {
-  position: relative;
-  flex: 1 1 auto;
+/* ===== Left panel ======================================================== */
+#left-panel {
+  width: 188px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ===== Main column ======================================================= */
+#main-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ===== Main animation box (obs bar + canvas) ============================ */
+#main-anim-box {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
+}
+
+/* ===== Observables bar ================================================== */
+#obs-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.obs-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.obs-lbl {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.obs-val {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+.obs-unit {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.obs-sep {
+  color: var(--border);
+  margin: 0 8px;
+  font-size: 14px;
+}
+
+.obs-theta { color: var(--accent); }
+.rv-rp     { color: #4af0ff; }
+.rv-rs     { color: #ff6b6b; }
+.rv-abs    { color: #ffd700; }
+.rv-field  { color: #ffa040; }
+
+/* ===== Canvas ============================================================ */
+#canvas-wrap {
   cursor: crosshair;
 }
 
@@ -79,41 +132,35 @@ header p {
   height: auto;
 }
 
-/* ===== Side panel ======================================================== */
-#side-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 190px;
-  max-width: 210px;
-}
-
+/* ===== Panel boxes (shared) ============================================== */
 .panel-box {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 14px;
+  padding: 11px 13px;
 }
 
 .panel-box h2 {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-bottom: 10px;
+  margin-bottom: 9px;
 }
 
 /* ===== Form controls ===================================================== */
 .field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: 3px;
+  margin-bottom: 7px;
 }
 
+.field:last-child { margin-bottom: 0; }
+
 .field label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-dim);
 }
 
@@ -123,108 +170,74 @@ header p {
   cursor: pointer;
 }
 
-.field input[type="number"],
-.field input[type="text"] {
+.field input[type="number"] {
   width: 100%;
   background: #0d1526;
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
-  padding: 4px 8px;
-  font-size: 13px;
+  padding: 4px 7px;
+  font-size: 12px;
 }
 
-.field input[type="number"]:focus,
-.field input[type="text"]:focus {
+.field input[type="number"]:focus {
   outline: none;
   border-color: var(--accent);
 }
 
 .angle-big {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   color: var(--accent);
   text-align: center;
-  margin: 4px 0 8px;
+  margin: 2px 0 7px;
   font-variant-numeric: tabular-nums;
 }
 
 /* ===== Buttons =========================================================== */
 .btn {
   width: 100%;
-  padding: 8px;
+  padding: 7px;
   border: none;
   border-radius: 5px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: opacity .15s;
 }
-.btn:hover { opacity: .85; }
-.btn:active { opacity: .7; }
+.btn:hover   { opacity: .85; }
+.btn:active  { opacity: .70; }
 .btn:disabled { opacity: .35; cursor: default; }
 
-.btn-scan  { background: var(--accent);  color: #000; }
-.btn-stop  { background: var(--red);     color: #fff; display: none; }
+.btn-scan { background: var(--accent); color: #000; }
+.btn-stop { background: var(--red);    color: #fff; display: none; }
 
-/* ===== SPR readout ======================================================= */
-#readout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 8px;
-  margin-top: 4px;
-}
-
-.readout-item {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.readout-label {
+/* ===== Scan status ======================================================= */
+#scan-status {
   font-size: 10px;
   color: var(--text-dim);
+  margin-top: 5px;
+  min-height: 13px;
 }
-
-.readout-value {
-  font-size: 15px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.rv-rp    { color: #4af0ff; }
-.rv-rs    { color: #ff6b6b; }
-.rv-abs   { color: #ffd700; }
-.rv-field { color: #ffa040; }
 
 /* ===== Charts panel ====================================================== */
 #charts-panel {
-  width: 100%;
-  max-width: 900px;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px;
+  padding: 10px 14px 12px;
 }
 
 #charts-panel h2 {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 #charts {
   width: 100%;
-  height: 260px;
-}
-
-/* ===== Scan progress ==================================================== */
-#scan-status {
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-top: 6px;
-  min-height: 14px;
+  height: 210px;
 }

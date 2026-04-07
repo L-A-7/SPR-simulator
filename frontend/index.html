@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -80,37 +80,40 @@
 
         <!-- Observables bar -->
         <div id="obs-bar">
-          <span id="obs-title">SPR Simulator</span>
-          <span class="obs-sep">|</span>
-          <span class="obs-item">
-            <span class="obs-lbl">θ</span>
-            <span class="obs-val obs-theta" id="obs-theta">65.0</span><span class="obs-unit">°</span>
-          </span>
-          <span class="obs-sep">|</span>
-          <span class="obs-item">
-            <span class="obs-lbl">λ</span>
-            <span class="obs-val" id="obs-lam">632.8</span><span class="obs-unit"> nm</span>
-          </span>
-          <span class="obs-sep">|</span>
-          <span class="obs-item">
-            <span class="obs-lbl">Rp</span>
-            <span class="obs-val rv-rp" id="rv-rp">—</span>
-          </span>
-          <span class="obs-sep">|</span>
-          <span class="obs-item">
-            <span class="obs-lbl">Rs</span>
-            <span class="obs-val rv-rs" id="rv-rs">—</span>
-          </span>
-          <span class="obs-sep">|</span>
-          <span class="obs-item">
-            <span class="obs-lbl">Absorption</span>
-            <span class="obs-val rv-abs" id="rv-abs">—</span>
-          </span>
-          <span class="obs-sep">|</span>
-          <span class="obs-item">
-            <span class="obs-lbl">Field enh.</span>
-            <span class="obs-val rv-field" id="rv-field">—</span>
-          </span>
+          <div id="obs-items">
+            <span id="obs-title">SPR Simulator</span>
+            <span class="obs-sep">|</span>
+            <span class="obs-item">
+              <span class="obs-lbl">θ</span>
+              <span class="obs-val obs-theta" id="obs-theta">65.0</span><span class="obs-unit">°</span>
+            </span>
+            <span class="obs-sep">|</span>
+            <span class="obs-item">
+              <span class="obs-lbl">λ</span>
+              <span class="obs-val" id="obs-lam">632.8</span><span class="obs-unit"> nm</span>
+            </span>
+            <span class="obs-sep">|</span>
+            <span class="obs-item">
+              <span class="obs-lbl">Rp</span>
+              <span class="obs-val rv-rp" id="rv-rp">—</span>
+            </span>
+            <span class="obs-sep">|</span>
+            <span class="obs-item">
+              <span class="obs-lbl">Rs</span>
+              <span class="obs-val rv-rs" id="rv-rs">—</span>
+            </span>
+            <span class="obs-sep">|</span>
+            <span class="obs-item">
+              <span class="obs-lbl">Absorption</span>
+              <span class="obs-val rv-abs" id="rv-abs">—</span>
+            </span>
+            <span class="obs-sep">|</span>
+            <span class="obs-item">
+              <span class="obs-lbl">Field enh.</span>
+              <span class="obs-val rv-field" id="rv-field">—</span>
+            </span>
+          </div>
+          <button id="theme-toggle" title="Toggle light / dark theme">☽</button>
         </div>
 
         <!-- Canvas -->

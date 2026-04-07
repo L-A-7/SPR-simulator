@@ -50,38 +50,56 @@ const scanStatus   = document.getElementById("scan-status");
 // ============================================================
 //  Plotly chart
 // ============================================================
+function chartColors() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  return dark ? {
+    paper: "hsl(221, 39%, 11%)",
+    plot:  "hsl(221, 49%, 10%)",
+    font:  "hsl(216, 57%, 86%)",
+    axis:  "hsl(219, 20%, 44%)",
+    grid:  "hsl(217, 39%, 19%)",
+  } : {
+    paper: "hsl(204, 55%, 92%)",
+    plot:  "hsl(0, 0%, 100%)",
+    font:  "hsl(204,35%,13%)",
+    axis:  "hsl(210,5%,60%)",
+    grid:  "hsl(204,60%,82%)",
+  };
+}
+
 function initChart() {
+  const c = chartColors();
   const layout = {
-    paper_bgcolor: "#111827",
-    plot_bgcolor:  "#0d1526",
-    font:          { color: "#c8d8f0", size: 11 },
+    paper_bgcolor: c.paper,
+    plot_bgcolor:  c.plot,
+    font:          { color: c.font, size: 11 },
     margin:        { t: 10, r: 20, b: 40, l: 50 },
     xaxis: {
       title: "Angle (°)",
-      color: "#5a6a88",
-      gridcolor: "#1e2d45",
+      color: c.axis,
+      gridcolor: c.grid,
       zeroline: false,
     },
     yaxis: {
       title: "Value",
       range: [-0.05, 1.05],
-      color: "#5a6a88",
-      gridcolor: "#1e2d45",
+      color: c.axis,
+      gridcolor: c.grid,
       zeroline: false,
     },
     legend: {
       x: 0.01, y: 0.99,
-      bgcolor: "rgba(0,0,0,0)",
-      bordercolor: "#1e2d45",
+      bgcolor: "transparent",
+      bordercolor: c.grid,
     },
     hovermode: "x unified",
     showlegend: true,
   };
 
   const traces = [
-    { x: [], y: [], name: "Rp (p-pol)",        mode: "lines", line: { color: "#4af0ff", width: 2 } },
-    { x: [], y: [], name: "Rs (s-pol)",         mode: "lines", line: { color: "#ff6b6b", width: 2 } },
-    { x: [], y: [], name: "Field intensity",    mode: "lines", line: { color: "#ffd700", width: 2 } },
+    { x: [], y: [], name: "Rp (p-pol)",        mode: "lines", line: { color: "hsl(185, 100%, 64%)", width: 2 } },
+    { x: [], y: [], name: "Rs (s-pol)",         mode: "lines", line: { color: "hsl(0,   100%, 71%)", width: 2 } },
+    { x: [], y: [], name: "Field intensity",    mode: "lines", line: { color: "hsl(51,  100%, 50%)", width: 2 } },
   ];
 
   Plotly.newPlot("charts", traces, layout, { responsive: true, displayModeBar: false });
@@ -131,13 +149,23 @@ function draw(theta_deg, result) {
   drawLabels(theta_deg);
 }
 
-function drawBackground() {
-  // Full background
-  ctx.fillStyle = "#08101e";
-  ctx.fillRect(0, 0, CW, CH);
+function canvasBgColors() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  return dark ? {
+    full:      "hsl(218, 58%,  8%)", // very dark navy — prism zone
+    topMedium: "hsl(216, 63%, 12%)", // slightly lighter — medium zone
+  } : {
+    full:      "hsl(204, 55%, 30%)", // medium blue — prism zone (lighter)
+    topMedium: "hsl(204, 70%, 15%)", // dark blue — medium zone (kept dark for glow)
+  };
+}
 
-  // Top medium zone (above gold)
-  ctx.fillStyle = "#0b1a30";
+function drawBackground() {
+  const bg = canvasBgColors();
+  ctx.fillStyle = bg.full;
+  ctx.fillRect(0, 0, CW, CH);
+  // Top medium zone (above gold layer)
+  ctx.fillStyle = bg.topMedium;
   ctx.fillRect(0, 0, CW, CY - GOLD_H);
 }
 
@@ -147,9 +175,9 @@ function drawTopMediumGlow(fi) {
   // Diffuse horizontal glow spreading from the gold layer upward
   const glowH = 120 * fi;
   const grad = ctx.createLinearGradient(0, CY - GOLD_H, 0, CY - GOLD_H - glowH);
-  grad.addColorStop(0,   `rgba(255, 200, 50, ${fi * 0.45})`);
-  grad.addColorStop(0.4, `rgba(255, 160, 20, ${fi * 0.15})`);
-  grad.addColorStop(1,   "rgba(255, 160, 20, 0)");
+  grad.addColorStop(0,   `hsla(44, 100%, 60%, ${fi * 0.45})`);
+  grad.addColorStop(0.4, `hsla(36, 100%, 54%, ${fi * 0.15})`);
+  grad.addColorStop(1,   "hsla(36, 100%, 54%, 0)");
 
   ctx.fillStyle = grad;
   ctx.fillRect(0, CY - GOLD_H - glowH, CW, glowH);
@@ -157,8 +185,8 @@ function drawTopMediumGlow(fi) {
   // Bright core strip right above the gold
   const coreH = 14 * fi;
   const coreGrad = ctx.createLinearGradient(0, CY - GOLD_H, 0, CY - GOLD_H - coreH);
-  coreGrad.addColorStop(0, `rgba(255, 240, 100, ${fi * 0.7})`);
-  coreGrad.addColorStop(1, "rgba(255, 240, 100, 0)");
+  coreGrad.addColorStop(0, `hsla(54, 100%, 70%, ${fi * 0.7})`);
+  coreGrad.addColorStop(1, "hsla(54, 100%, 70%, 0)");
   ctx.fillStyle = coreGrad;
   ctx.fillRect(0, CY - GOLD_H - coreH, CW, coreH);
 }
@@ -172,13 +200,13 @@ function drawGlass() {
   ctx.lineTo(CX + R, CY);
   ctx.arc(CX, CY, R, 0, Math.PI);   // 0→π draws the bottom half-circle
   ctx.closePath();
-  ctx.fillStyle = "rgba(70, 130, 200, 0.18)";
+  ctx.fillStyle = "hsla(212, 54%, 53%, 0.18)";
   ctx.fill();
 
   // Curved border
   ctx.beginPath();
   ctx.arc(CX, CY, R, 0, Math.PI);
-  ctx.strokeStyle = "rgba(100, 170, 255, 0.35)";
+  ctx.strokeStyle = "hsla(213, 100%, 70%, 0.35)";
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
@@ -189,20 +217,20 @@ function drawGoldLayer(fi) {
   ctx.save();
 
   // Glow shadow on the gold rect itself
-  ctx.shadowColor = `rgba(255, 210, 50, ${fi * 0.9})`;
+  ctx.shadowColor = `hsla(47, 100%, 60%, ${fi * 0.9})`;
   ctx.shadowBlur  = 18 + fi * 30;
 
   // Gold rectangle (sits on top of the flat face)
   const grad = ctx.createLinearGradient(0, CY - GOLD_H, 0, CY);
-  grad.addColorStop(0, "#e6c000");
-  grad.addColorStop(1, "#9a7800");
+  grad.addColorStop(0, "hsl(50, 100%, 45%)");
+  grad.addColorStop(1, "hsl(47, 100%, 30%)");
   ctx.fillStyle = grad;
   ctx.fillRect(CX - R, CY - GOLD_H, 2 * R, GOLD_H);
 
   ctx.shadowBlur = 0;
 
   // Thin bright top edge
-  ctx.strokeStyle = `rgba(255, 230, 80, ${0.4 + fi * 0.5})`;
+  ctx.strokeStyle = `hsla(51, 100%, 66%, ${0.4 + fi * 0.5})`;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(CX - R, CY - GOLD_H);
@@ -216,7 +244,7 @@ function drawNormal() {
   // Dashed vertical normal line at the hit point
   ctx.save();
   ctx.setLineDash([5, 5]);
-  ctx.strokeStyle = "rgba(150, 180, 220, 0.3)";
+  ctx.strokeStyle = "hsla(214, 50%, 73%, 0.3)";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(CX, CY - GOLD_H - 60);
@@ -231,7 +259,7 @@ function drawAngleArc(theta_deg) {
   const arcR  = 42;
 
   ctx.save();
-  ctx.strokeStyle = "rgba(100, 200, 255, 0.55)";
+  ctx.strokeStyle = "hsla(201, 100%, 70%, 0.55)";
   ctx.lineWidth = 1.5;
 
   // Arc between normal (up = −π/2) and the incident beam direction
@@ -250,7 +278,7 @@ function drawAngleArc(theta_deg) {
   const midAngle = (normalAngle + beamAngle) / 2;
   const lx = CX + (arcR + 12) * Math.cos(midAngle);
   const ly = CY + (arcR + 12) * Math.sin(midAngle);
-  ctx.fillStyle = "rgba(100, 200, 255, 0.9)";
+  ctx.fillStyle = "hsla(201, 100%, 70%, 0.9)";
   ctx.font = "bold 13px 'Segoe UI', sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -281,8 +309,8 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
   ctx.save();
 
   // --- Incident beam ---
-  const beamColor = grabbed ? "#ff8866" : "#ff4444";
-  ctx.shadowColor = grabbed ? "rgba(255, 140, 80, 0.9)" : "rgba(255, 60, 60, 0.6)";
+  const beamColor = grabbed ? "hsl(13, 100%, 70%)" : "hsl(0, 100%, 63%)";
+  ctx.shadowColor = grabbed ? "hsla(21, 100%, 66%, 0.9)" : "hsla(0, 100%, 62%, 0.6)";
   ctx.shadowBlur  = grabbed ? 18 : 8;
   ctx.strokeStyle = beamColor;
   ctx.lineWidth   = grabbed ? 3.5 : 2.5;
@@ -300,9 +328,9 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
   // --- Reflected beam ---
   const reflAlpha = 0.35 + Rp * 0.65;  // dimmer at resonance
   ctx.setLineDash([6, 5]);
-  ctx.strokeStyle = `rgba(255, 100, 100, ${reflAlpha})`;
+  ctx.strokeStyle = `hsla(0, 100%, 70%, ${reflAlpha})`;
   ctx.lineWidth   = 2;
-  ctx.shadowColor = `rgba(255, 80, 80, ${reflAlpha * 0.5})`;
+  ctx.shadowColor = `hsla(0, 100%, 66%, ${reflAlpha * 0.5})`;
   ctx.shadowBlur  = 5;
   ctx.beginPath();
   ctx.moveTo(CX, CY);
@@ -334,22 +362,22 @@ function drawLabels(theta_deg) {
   ctx.font = "12px 'Segoe UI', sans-serif";
 
   // Top medium label — positioned in the lower part of the top-medium zone
-  ctx.fillStyle = "rgba(100, 180, 255, 0.55)";
+  ctx.fillStyle = "hsla(209, 100%, 70%, 0.55)";
   ctx.textAlign = "left";
   ctx.fillText("Top medium (n = " + _paramVal("top-n") + ")", 10, CY - GOLD_H - 14);
 
   // Gold label
-  ctx.fillStyle = "rgba(220, 200, 50, 0.75)";
+  ctx.fillStyle = "hsla(53, 71%, 53%, 0.75)";
   ctx.textAlign = "left";
   ctx.fillText("Au  " + _paramVal("gold-nm") + " nm", 10, CY - GOLD_H - 5);
 
   // Glass label (inside half-disk)
-  ctx.fillStyle = "rgba(100, 170, 255, 0.55)";
+  ctx.fillStyle = "hsla(213, 100%, 70%, 0.55)";
   ctx.textAlign = "center";
   ctx.fillText("Glass  n = " + _paramVal("prism-n"), CX, CY + R * 0.5);
 
   // λ label (bottom-right of diagram)
-  ctx.fillStyle = "rgba(100, 170, 255, 0.4)";
+  ctx.fillStyle = "hsla(213, 100%, 70%, 0.4)";
   ctx.textAlign = "right";
   ctx.fillText("λ = " + _paramVal("lam-nm") + " nm", CW - 8, CH - 6);
 
@@ -678,6 +706,25 @@ function finishScan(msg) {
 //  Init
 // ============================================================
 initChart();
+
+// Theme toggle
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  const html = document.documentElement;
+  const next = html.dataset.theme === "dark" ? "light" : "dark";
+  html.dataset.theme = next;
+  document.getElementById("theme-toggle").textContent = next === "dark" ? "☀" : "☽";
+  if (chartReady) {
+    const c = chartColors();
+    Plotly.relayout("charts", {
+      paper_bgcolor: c.paper,
+      plot_bgcolor:  c.plot,
+      "font.color":  c.font,
+      "xaxis.color": c.axis, "xaxis.gridcolor": c.grid,
+      "yaxis.color": c.axis, "yaxis.gridcolor": c.grid,
+      "legend.bordercolor": c.grid,
+    });
+  }
+});
 
 // Build lookup table, then draw initial state
 obsLam.textContent = _paramVal("lam-nm");

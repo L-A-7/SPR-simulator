@@ -1,17 +1,58 @@
 /* ===== Reset & base ===================================================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ===== Shared / theme-independent tokens ================================ */
 :root {
-  --bg:        #0a0e1a;
-  --panel:     #111827;
-  --border:    #1e2d45;
-  --accent:    #4af0ff;
-  --accent2:   #ffd700;
-  --text:      #c8d8f0;
-  --text-dim:  #5a6a88;
-  --red:       #ff4d4d;
-  --gold:      #c8a200;
-  --radius:    8px;
+  --accent:  hsl(185, 100%, 64%);   /* cyan */
+  --accent2: hsl(51,  100%, 50%);   /* gold */
+  --red:     hsl(0,   100%, 65%);
+  --gold:    hsl(49,  100%, 39%);
+  --radius:  8px;
+}
+
+/* ===== Dark theme ======================================================= */
+[data-theme="dark"] {
+  --bg:              hsl(225, 44%,  7%);
+  --panel:           hsl(221, 39%, 11%);
+  --border:          hsl(217, 39%, 19%);
+  --text:            hsl(216, 57%, 86%);
+  --text-dim:        hsl(219, 20%, 44%);
+  --input-bg:        hsl(221, 49%, 10%);
+  /* obs-bar / canvas card — same as panel in dark */
+  --obs-bar-bg:      transparent;
+  --obs-bar-border:  hsl(217, 39%, 19%);
+  --obs-text:        hsl(216, 57%, 86%);
+  --obs-dim:         hsl(219, 20%, 44%);
+  --obs-sep-color:   hsl(217, 39%, 19%);
+  --canvas-bg:       transparent;
+}
+
+/* ===== Light theme (Phaselab palette) =================================== */
+/*
+ * Blue palette from phaselab (hue 204):
+ *   --blue-900  hsl(204, 72%, 18%)  → canvas card bg (dark for glow)
+ *   --blue-800  hsl(204, 70%, 27%)  → obs bar bg
+ *   --blue-100  hsl(204, 55%, 92%)  → side panel / chart cards
+ *   --blue-200  hsl(204, 60%, 82%)  → borders on light bg
+ * Grey palette (hue 210):
+ *   --grey-50   hsl(210, 15%, 98%)  → page background
+ *   --grey-500  hsl(210,  5%, 60%)  → dimmed labels on light bg
+ */
+[data-theme="light"] {
+  --bg:              hsl(210, 15%, 98%);    /* grey-50  */
+  --panel:           hsl(204, 40%, 88%);   /* slightly darker than blue-100 */
+  --border:          hsl(204, 60%, 82%);   /* blue-200 */
+  --text:            hsl(204, 35%, 13%);   /* text-heading */
+  --text-dim:        hsl(210,  5%, 60%);   /* grey-500 */
+  --input-bg:        hsl(0, 0%, 100%);
+  --accent:          hsl(44, 90%, 45%);    /* gold — replaces cyan in light theme */
+  /* obs-bar / canvas card stay dark so the glow effect reads */
+  --obs-bar-bg:      hsl(204, 70%, 27%);   /* blue-800 */
+  --obs-bar-border:  hsl(204, 70%, 20%);
+  --obs-text:        hsl(0, 0%, 100%);
+  --obs-dim:         hsla(0, 0%, 100%, 0.60);
+  --obs-sep-color:   hsla(0, 0%, 100%, 0.25);
+  --canvas-bg:       hsl(204, 55%, 35%);   /* lighter blue for lower canvas zone */
 }
 
 html, body {
@@ -68,7 +109,7 @@ html, body {
 /* ===== Main animation box (obs bar + canvas) ============================ */
 #main-anim-box {
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid var(--obs-bar-border);
   border-radius: var(--radius);
   overflow: hidden;
 }
@@ -77,12 +118,23 @@ html, body {
 #obs-bar {
   display: flex;
   align-items: center;
-  gap: 4px;
   padding: 5px 14px;
-  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  background: var(--obs-bar-bg);
+  border-bottom: 1px solid var(--obs-bar-border);
+  color: var(--obs-text);
   font-size: 12px;
-  white-space: nowrap;
+}
+
+/* scrollable obs items — button stays pinned outside */
+#obs-items {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
   overflow-x: auto;
+  white-space: nowrap;
 }
 
 .obs-item {
@@ -93,7 +145,7 @@ html, body {
 
 .obs-lbl {
   font-size: 10px;
-  color: var(--text-dim);
+  color: var(--obs-dim);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -106,24 +158,43 @@ html, body {
 
 .obs-unit {
   font-size: 10px;
-  color: var(--text-dim);
+  color: var(--obs-dim);
 }
 
 .obs-sep {
-  color: var(--border);
+  color: var(--obs-sep-color);
   margin: 0 8px;
   font-size: 14px;
 }
 
 .obs-theta { color: var(--accent); }
-.rv-rp     { color: #4af0ff; }
-.rv-rs     { color: #ff6b6b; }
-.rv-abs    { color: #ffd700; }
-.rv-field  { color: #ffa040; }
+.rv-rp     { color: hsl(185, 100%, 64%); }
+.rv-rs     { color: hsl(0,   100%, 71%); }
+.rv-abs    { color: hsl(51,  100%, 50%); }
+.rv-field  { color: hsl(30,  100%, 63%); }
+
+/* Light theme: all obs values use gold accent (overrides the per-value colours above) */
+[data-theme="light"] .obs-val { color: var(--accent); }
+
+/* ===== Theme toggle button ============================================== */
+#theme-toggle {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--obs-sep-color);
+  border-radius: 4px;
+  color: var(--obs-dim);
+  font-size: 13px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+#theme-toggle:hover { opacity: .75; }
 
 /* ===== Canvas ============================================================ */
 #canvas-wrap {
   cursor: crosshair;
+  background: var(--canvas-bg);
 }
 
 #diagram {
@@ -172,7 +243,7 @@ html, body {
 
 .field input[type="number"] {
   width: 100%;
-  background: #0d1526;
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
@@ -209,8 +280,8 @@ html, body {
 .btn:active  { opacity: .70; }
 .btn:disabled { opacity: .35; cursor: default; }
 
-.btn-scan { background: var(--accent); color: #000; }
-.btn-stop { background: var(--red);    color: #fff; display: none; }
+.btn-scan { background: var(--accent); color: hsl(0, 0%, 0%); }
+.btn-stop { background: var(--red);    color: hsl(0, 0%, 100%); display: none; }
 
 /* ===== Scan status ======================================================= */
 #scan-status {

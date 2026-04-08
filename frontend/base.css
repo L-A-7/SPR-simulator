@@ -1,0 +1,102 @@
+/* ============================================================
+   BASE — PhaseLab Instrument
+   HTML element defaults. Uses tokens only — no raw values.
+   ============================================================ */
+
+/* ── Reset & box model ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ── Body ───────────────────────────────────────────────────── */
+body {
+  font-family: var(--font-main);
+  font-size: var(--font-size-base);
+  font-weight: var(--fw-normal);
+  color: var(--text-body);
+  background-color: var(--bg-page);
+  line-height: var(--line-height);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Headings ───────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-heading);
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: var(--sp-4);
+}
+
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl);  }
+h4 { font-size: var(--text-lg);  font-weight: var(--fw-semi); }
+h5 { font-size: var(--text-md);  font-weight: var(--fw-semi); }
+h6 { font-size: var(--text-base);font-weight: var(--fw-semi); letter-spacing: 0.03em; }
+
+/* ── Paragraphs ─────────────────────────────────────────────── */
+p {
+  margin-top: 0;
+  margin-bottom: var(--sp-4);
+}
+p:last-child { margin-bottom: 0; }
+
+/* ── Links ──────────────────────────────────────────────────── */
+a {
+  color: var(--color-brand);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover { color: var(--color-brand-hover); text-decoration: underline; }
+
+/* ── Images & media ─────────────────────────────────────────── */
+img, video { max-width: 100%; height: auto; display: block; }
+
+/* ── Lists ──────────────────────────────────────────────────── */
+ul, ol { margin-top: 0; padding-left: var(--sp-6); }
+li { margin-bottom: var(--sp-2); }
+
+/* ── Horizontal rule ────────────────────────────────────────── */
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--sp-8) 0;
+}
+
+/* ── Selection ──────────────────────────────────────────────── */
+::selection {
+  background: var(--blue-100);
+  color: var(--color-brand);
+}
+
+/* ── Text utility classes ───────────────────────────────────── */
+.text-blue      { color: var(--color-brand) !important; }
+.text-blue-mid  { color: var(--blue-500)    !important; }
+.text-gold      { color: var(--color-accent)!important; }
+.text-muted     { color: var(--text-muted)  !important; }
+.text-on-deep   { color: var(--text-on-deep)!important; }
+.text-heading   { color: var(--text-heading)!important; }
+
+/* ── Font weight utilities ──────────────────────────────────── */
+.fw-normal { font-weight: var(--fw-normal); }
+.fw-medium { font-weight: var(--fw-medium); }
+.fw-semi   { font-weight: var(--fw-semi);   }
+.fw-bold   { font-weight: var(--fw-bold);   }
+
+/* ── Font size utilities ────────────────────────────────────── */
+.text-xs   { font-size: var(--text-xs);   }
+.text-sm   { font-size: var(--text-sm);   }
+.text-base { font-size: var(--text-base); }
+.text-md   { font-size: var(--text-md);   }
+.text-lg   { font-size: var(--text-lg);   }
+
+/* ── Accent words inside headings ───────────────────────────── */
+/* Usage: <h2>Our <span class="accent-blue">IPSO LAB</span> Technology</h2> */
+.accent-blue { color: var(--blue-500); }
+.accent-gold { color: var(--color-accent); }

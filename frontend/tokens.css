@@ -1,0 +1,120 @@
+/* ============================================================
+   DESIGN TOKENS — PhaseLab Instrument
+   Single source of truth for every visual value.
+   To restyle the entire site, only edit this file.
+   ============================================================ */
+
+:root {
+
+  /* ── Raw blue palette  (hue 204 — brand origin) ────────────
+     Derived from existing site: blue-1 = hsl(204,70%,27%)     */
+  --blue-900: hsl(204, 72%, 18%);   /* deepest — footer, darkest bg  */
+  --blue-800: hsl(204, 70%, 27%);   /* PRIMARY brand blue             */
+  --blue-700: hsl(204, 70%, 31%);   /* hover / secondary shade        */
+  --blue-600: hsl(204, 73%, 34%);   /* table headers, accents         */
+  --blue-500: hsl(204, 71%, 41%);   /* lighter interactive            */
+  --blue-400: hsl(204, 68%, 55%);   /* disabled / mid tones           */
+  --blue-200: hsl(204, 60%, 82%);   /* borders on light bg            */
+  --blue-100: hsl(204, 55%, 92%);   /* tinted callout backgrounds     */
+  --blue-50:  hsl(204, 40%, 97%);   /* near-white, very faint tint    */
+
+  /* ── Raw gold palette  (hue 44 — accent/spice) ─────────────
+     Derived from existing tertiary: hsl(44,90%,42%)            */
+  --gold-800: hsl(44, 88%, 32%);    /* deep gold                      */
+  --gold-700: hsl(44, 88%, 38%);    /* dark gold — hover              */
+  --gold-600: hsl(44, 90%, 42%);    /* PRIMARY gold accent            */
+  --gold-550: hsl(44, 90%, 46%);    /* intermediate — candidate       */
+  --gold-500: hsl(44, 90%, 50%);    /* lighter gold                   */
+  --gold-100: hsl(44, 80%, 93%);    /* tinted background              */
+
+  /* ── Raw grey/neutral (hue 210 — cool tint) ────────────────
+     Existing light-grey ≈ hsl(210,8%,88%), llight ≈ 93%        */
+  --grey-900: hsl(210, 12%, 18%);
+  --grey-700: hsl(210,  8%, 38%);   /* body text                      */
+  --grey-600: hsl(210,  6%, 50%);
+  --grey-500: hsl(210,  5%, 60%);   /* muted text, labels             */
+  --grey-400: hsl(210,  5%, 72%);
+  --grey-300: hsl(210,  5%, 82%);
+  --grey-200: hsl(210,  8%, 88%);   /* existing light-grey            */
+  --grey-100: hsl(210,  8%, 93%);   /* existing llight-grey           */
+  --grey-50:  hsl(210, 15%, 98%);   /* page background                */
+
+  /* ── Raw red palette  (hue 0 — laser beam) ─────────────────
+     Added for the SPR simulator; absent from the brand palette. */
+  --red-700: hsl(0,  85%, 45%);    /* deep crimson                   */
+  --red-500: hsl(0, 100%, 63%);    /* PRIMARY — laser beam           */
+  --red-400: hsl(0, 100%, 71%);    /* Rs curve / reflected beam      */
+
+  /* ── Semantic background aliases ───────────────────────────── */
+  --bg-page:    var(--grey-50);     /* default page background        */
+  --bg-surface: var(--grey-100);    /* alternating sections           */
+  --bg-deep:    var(--blue-800);    /* navbar, footer, dark banners   */
+  --bg-deep-alt:var(--blue-900);    /* slightly deeper dark sections  */
+
+  /* ── Semantic text aliases ──────────────────────────────────── */
+  --text-heading: hsl(204, 35%, 13%);  /* near-black, blue-tinted     */
+  --text-body:    var(--grey-700);     /* body paragraphs             */
+  --text-muted:   var(--grey-500);     /* captions, helper text       */
+  --text-on-deep: #ffffff;             /* on dark blue sections       */
+
+  /* ── Semantic color aliases ─────────────────────────────────── */
+  --color-brand:       var(--blue-800);
+  --color-brand-hover: var(--blue-700);
+  --color-accent:      var(--gold-550);
+  --color-accent-hover:var(--gold-700);
+  --color-border:      var(--grey-200);
+  --color-border-blue: var(--blue-200);
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --font-main:   'Roboto', sans-serif;
+  --font-size-base: 16px;
+  --line-height: 1.72;
+
+  /* Type scale — fluid where useful */
+  --text-xs:   0.75rem;                          /*  12px */
+  --text-sm:   0.875rem;                         /*  14px */
+  --text-base: 1rem;                             /*  16px */
+  --text-md:   1.125rem;                         /*  18px */
+  --text-lg:   clamp(1.25rem,  2.5vw, 1.5rem);  /*  20–24px */
+  --text-xl:   clamp(1.5rem,   3vw,   2rem);    /*  24–32px */
+  --text-2xl:  clamp(1.85rem,  4vw,   2.5rem);  /*  30–40px */
+  --text-3xl:  clamp(2.25rem,  5vw,   3.25rem); /*  36–52px */
+
+  /* Font weights */
+  --fw-normal:  400;
+  --fw-medium:  500;
+  --fw-semi:    600;
+  --fw-bold:    700;
+
+  /* ── Spacing scale ──────────────────────────────────────────── */
+  --sp-1:  0.25rem;  /*  4px */
+  --sp-2:  0.5rem;   /*  8px */
+  --sp-3:  0.75rem;  /* 12px */
+  --sp-4:  1rem;     /* 16px */
+  --sp-5:  1.25rem;  /* 20px */
+  --sp-6:  1.5rem;   /* 24px */
+  --sp-8:  2rem;     /* 32px */
+  --sp-10: 2.5rem;   /* 40px */
+  --sp-12: 3rem;     /* 48px */
+  --sp-16: 4rem;     /* 64px */
+  --sp-20: 5rem;     /* 80px */
+  --sp-24: 6rem;     /* 96px */
+
+  /* Section vertical padding (applied via .section class) */
+  --section-py: var(--sp-16);
+
+  /* ── Borders & radius ───────────────────────────────────────── */
+  --radius-sm:   3px;
+  --radius-md:   6px;
+  --radius-lg:  12px;
+  --radius-pill: 9999px;
+
+  /* ── Shadows ────────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 4px  hsl(204 30% 15% / 0.07);
+  --shadow-md: 0 2px 12px hsl(204 30% 15% / 0.10);
+  --shadow-lg: 0 6px 28px hsl(204 30% 15% / 0.14);
+
+  /* ── Transitions ────────────────────────────────────────────── */
+  --transition-fast: 0.15s ease;
+  --transition:      0.22s ease;
+}

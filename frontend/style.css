@@ -2,57 +2,50 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ===== Shared / theme-independent tokens ================================ */
+/* All color tokens reference phaselab tokens.css — no raw hsl() values.  */
 :root {
-  --accent:  hsl(185, 100%, 64%);   /* cyan */
-  --accent2: hsl(51,  100%, 50%);   /* gold */
-  --red:     hsl(0,   100%, 65%);
-  --gold:    hsl(49,  100%, 39%);
+  --accent:  var(--blue-400);   /* interactive blue — dark-theme default  */
+  --accent2: var(--gold-500);   /* bright gold — chart / canvas           */
+  --red:     var(--red-500);    /* laser beam                             */
+  --gold:    var(--gold-600);   /* physical Au layer                      */
   --radius:  8px;
 }
 
-/* ===== Dark theme ======================================================= */
+/* ===== Dark theme — phaselab deep-blue palette ========================== */
 [data-theme="dark"] {
-  --bg:              hsl(225, 44%,  7%);
-  --panel:           hsl(221, 39%, 11%);
-  --border:          hsl(217, 39%, 19%);
-  --text:            hsl(216, 57%, 86%);
-  --text-dim:        hsl(219, 20%, 44%);
-  --input-bg:        hsl(221, 49%, 10%);
-  /* obs-bar / canvas card — same as panel in dark */
+  --bg:              var(--blue-900);      /* hsl(204, 72%, 18%) */
+  --panel:           var(--bg-deep);       /* = var(--blue-800)  */
+  --border:          var(--blue-700);      /* hsl(204, 70%, 31%) */
+  --text:            var(--text-on-deep);  /* #ffffff            */
+  --text-dim:        var(--blue-400);      /* hsl(204, 68%, 55%) */
+  --input-bg:        var(--blue-900);
+  --input-text:      var(--text-on-deep); /* white text on dark input bg */
+  /* obs-bar / canvas card */
   --obs-bar-bg:      transparent;
-  --obs-bar-border:  hsl(217, 39%, 19%);
-  --obs-text:        hsl(216, 57%, 86%);
-  --obs-dim:         hsl(219, 20%, 44%);
-  --obs-sep-color:   hsl(217, 39%, 19%);
+  --obs-bar-border:  var(--blue-700);
+  --obs-text:        var(--text-on-deep);
+  --obs-dim:         var(--blue-400);
+  --obs-sep-color:   var(--blue-700);
   --canvas-bg:       transparent;
 }
 
-/* ===== Light theme (Phaselab palette) =================================== */
-/*
- * Blue palette from phaselab (hue 204):
- *   --blue-900  hsl(204, 72%, 18%)  → canvas card bg (dark for glow)
- *   --blue-800  hsl(204, 70%, 27%)  → obs bar bg
- *   --blue-100  hsl(204, 55%, 92%)  → side panel / chart cards
- *   --blue-200  hsl(204, 60%, 82%)  → borders on light bg
- * Grey palette (hue 210):
- *   --grey-50   hsl(210, 15%, 98%)  → page background
- *   --grey-500  hsl(210,  5%, 60%)  → dimmed labels on light bg
- */
+/* ===== Light theme — phaselab tokens.css palette ======================== */
 [data-theme="light"] {
-  --bg:              hsl(210, 15%, 98%);    /* grey-50  */
-  --panel:           hsl(204, 40%, 88%);   /* slightly darker than blue-100 */
-  --border:          hsl(204, 60%, 82%);   /* blue-200 */
-  --text:            hsl(204, 35%, 13%);   /* text-heading */
-  --text-dim:        hsl(210,  5%, 60%);   /* grey-500 */
-  --input-bg:        hsl(0, 0%, 100%);
-  --accent:          hsl(44, 90%, 45%);    /* gold — replaces cyan in light theme */
+  --bg:              var(--grey-50);       /* hsl(210, 15%, 98%) */
+  --panel:           var(--bg-deep);       /* = var(--blue-800), dark panel */
+  --border:          var(--blue-700);      /* border on dark panel */
+  --text:            var(--text-on-deep);  /* #ffffff — white on dark panel */
+  --text-dim:        hsla(0, 0%, 100%, 0.75);  /* dimmed white */
+  --input-bg:        #fff;
+  --input-text:      var(--text-heading);  /* dark text inside white inputs */
+  --accent:          var(--gold-550);      /* hsl(44, 90%, 46%) — gold replaces blue */
   /* obs-bar / canvas card stay dark so the glow effect reads */
-  --obs-bar-bg:      hsl(204, 70%, 27%);   /* blue-800 */
-  --obs-bar-border:  hsl(204, 70%, 20%);
-  --obs-text:        hsl(0, 0%, 100%);
+  --obs-bar-bg:      var(--blue-800);      /* hsl(204, 70%, 27%) */
+  --obs-bar-border:  var(--blue-900);      /* hsl(204, 72%, 18%) */
+  --obs-text:        var(--text-on-deep);  /* #ffffff */
   --obs-dim:         hsla(0, 0%, 100%, 0.60);
   --obs-sep-color:   hsla(0, 0%, 100%, 0.25);
-  --canvas-bg:       hsl(204, 55%, 35%);   /* lighter blue for lower canvas zone */
+  --canvas-bg:       var(--blue-600);      /* hsl(204, 73%, 34%) */
 }
 
 html, body {
@@ -168,10 +161,10 @@ html, body {
 }
 
 .obs-theta { color: var(--accent); }
-.rv-rp     { color: hsl(185, 100%, 64%); }
-.rv-rs     { color: hsl(0,   100%, 71%); }
-.rv-abs    { color: hsl(51,  100%, 50%); }
-.rv-field  { color: hsl(30,  100%, 63%); }
+.rv-rp     { color: var(--blue-400); }   /* --blue-400 */
+.rv-rs     { color: var(--red-400); }    /* --red-400  */
+.rv-abs    { color: var(--gold-500); }   /* --gold-500 */
+.rv-field  { color: var(--gold-700); }   /* --gold-700 — darker gold, distinct from abs */
 
 /* Light theme: all obs values use gold accent (overrides the per-value colours above) */
 [data-theme="light"] .obs-val { color: var(--accent); }
@@ -246,7 +239,7 @@ html, body {
   background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 4px;
-  color: var(--text);
+  color: var(--input-text);
   padding: 4px 7px;
   font-size: 12px;
 }
@@ -280,8 +273,8 @@ html, body {
 .btn:active  { opacity: .70; }
 .btn:disabled { opacity: .35; cursor: default; }
 
-.btn-scan { background: var(--accent); color: hsl(0, 0%, 0%); }
-.btn-stop { background: var(--red);    color: hsl(0, 0%, 100%); display: none; }
+.btn-scan { background: var(--accent); color: var(--text-heading); }
+.btn-stop { background: var(--red);    color: var(--text-on-deep); display: none; }
 
 /* ===== Scan status ======================================================= */
 #scan-status {

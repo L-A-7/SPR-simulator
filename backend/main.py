@@ -11,7 +11,6 @@ from pathlib import Path
 import numpy as np
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from spr_physics import calculate_spr
 
@@ -170,5 +169,3 @@ async def ws_scan(websocket: WebSocket) -> None:
 #  Static files — serve the frontend (must be last)
 # ---------------------------------------------------------------------------
 
-if FRONTEND_DIR.is_dir():
-    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")

@@ -638,9 +638,10 @@ function startScan() {
   btnStop.style.display = "block";
   scanStatus.textContent = "Scanning…";
 
+  const wsProto = location.protocol === "https:" ? "wss" : "ws";
   const wsURL = (API.startsWith("http")
     ? API.replace(/^http/, "ws")
-    : `ws://${location.host}`) + "/ws/scan";
+    : `${wsProto}://${location.host}`) + "/ws/scan";
 
   scanWS = new WebSocket(wsURL);
 

@@ -71,8 +71,9 @@ let isDragging       = false;
 let isHoveringBeam   = false;
 let fetchTimer  = null;
 let scanWS      = null;
-let scanData    = { angles: [], Rp: [], Rs: [], field: [] };
+let scanData    = { angles: [], Rp: [], Rs: [], field: [], delta_s: [], delta_p: [] };
 let chartReady  = false;
+let chart2Ready = false;
 let lookupTable = [];   // pre-computed dense angle scan for instant drag interpolation
 
 // ============================================================
@@ -173,10 +174,49 @@ function initChart() {
   chartReady = true;
 }
 
+function initChart2() {
+  const c = chartColors();
+  const layout = {
+    paper_bgcolor: c.paper,
+    plot_bgcolor:  c.plot,
+    font:          { color: c.font, size: 11 },
+    margin:        { t: 10, r: 20, b: 40, l: 50 },
+    xaxis: {
+      title: "Angle (°)",
+      color: c.axis,
+      gridcolor: c.grid,
+      zeroline: false,
+    },
+    yaxis: {
+      title: "Phase (°)",
+      range: [-185, 185],
+      color: c.axis,
+      gridcolor: c.grid,
+      zeroline: true,
+      zerolinecolor: c.grid,
+    },
+    legend: {
+      x: 0.01, y: 0.99,
+      bgcolor: "transparent",
+      bordercolor: c.grid,
+    },
+    hovermode: "x unified",
+    showlegend: true,
+  };
+
+  const traces = [
+    { x: [], y: [], name: "δs (s-pol)", mode: "lines", line: { color: CLR_RED_400,  width: 2 } },
+    { x: [], y: [], name: "δp (p-pol)", mode: "lines", line: { color: CLR_BLUE_400, width: 2 } },
+  ];
+
+  Plotly.newPlot("charts2", traces, layout, { responsive: true, displayModeBar: false });
+  chart2Ready = true;
+}
+
 function resetChart() {
-  scanData = { angles: [], Rp: [], Rs: [], field: [] };
-  if (!chartReady) return;
-  Plotly.restyle("charts", { x: [[], [], []], y: [[], [], []] }, [0, 1, 2]);
+  scanData = { angles: [], Rp: [], Rs: [], field: [], delta_s: [], delta_p: [] };
+  if (chartReady)  Plotly.restyle("charts",  { x: [[], [], []], y: [[], [], []] }, [0, 1, 2]);
+  if (chart2Ready) Plotly.restyle("charts2", { x: [[], []],     y: [[], []]     }, [0, 1]);
 }
 
 function appendChartPoint(a, res) {
@@ -184,16 +224,23 @@ function appendChartPoint(a, res) {
   scanData.Rp.push(res.Rp);
   scanData.Rs.push(res.Rs);
   scanData.field.push(res.field_intensity);
+  scanData.delta_s.push(res.delta_s);
+  scanData.delta_p.push(res.delta_p);
 
-  if (!chartReady) return;
-  Plotly.extendTraces(
-    "charts",
-    {
-      x: [[a], [a], [a]],
-      y: [[res.Rp], [res.Rs], [res.field_intensity]],
-    },
-    [0, 1, 2]
-  );
+  if (chartReady) {
+    Plotly.extendTraces(
+      "charts",
+      { x: [[a], [a], [a]], y: [[res.Rp], [res.Rs], [res.field_intensity]] },
+      [0, 1, 2]
+    );
+  }
+  if (chart2Ready) {
+    Plotly.extendTraces(
+      "charts2",
+      { x: [[a], [a]], y: [[res.delta_s], [res.delta_p]] },
+      [0, 1]
+    );
+  }
 }
 
 // ============================================================
@@ -756,6 +803,7 @@ function finishScan(msg) {
 //  Init
 // ============================================================
 initChart();
+initChart2();
 
 // Theme toggle
 document.getElementById("theme-toggle").addEventListener("click", () => {
@@ -763,16 +811,18 @@ document.getElementById("theme-toggle").addEventListener("click", () => {
   const next = html.dataset.theme === "dark" ? "light" : "dark";
   html.dataset.theme = next;
   document.getElementById("theme-toggle").textContent = next === "dark" ? "☀" : "☽";
-  if (chartReady) {
+  if (chartReady || chart2Ready) {
     const c = chartColors();
-    Plotly.relayout("charts", {
+    const update = {
       paper_bgcolor: c.paper,
       plot_bgcolor:  c.plot,
       "font.color":  c.font,
       "xaxis.color": c.axis, "xaxis.gridcolor": c.grid,
       "yaxis.color": c.axis, "yaxis.gridcolor": c.grid,
       "legend.bordercolor": c.grid,
-    });
+    };
+    if (chartReady)  Plotly.relayout("charts",  update);
+    if (chart2Ready) Plotly.relayout("charts2", update);
   }
 });
 

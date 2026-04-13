@@ -363,7 +363,8 @@ body {
   margin-bottom: 8px;
 }
 
-#charts {
+#charts,
+#charts2 {
   width: 100%;
   height: 210px;
 }

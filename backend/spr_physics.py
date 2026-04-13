@@ -14,6 +14,8 @@ Returns a dict:
     'Rs':              float,   # s-polarisation (TE) power reflectance  [0, 1]
     'absorption':      float,   # 1 - Rp
     'field_intensity': float,   # proportional to absorption (proxy)
+    'delta_s':         float,   # phase of s-pol reflection coefficient (deg, −180…180)
+    'delta_p':         float,   # phase of p-pol reflection coefficient (deg, −180…180)
   }
 """
 
@@ -86,8 +88,10 @@ def multilayer(nu: np.ndarray, h: list, wav: float, theta: float) -> list:
     T_TM = 0.0
     delta_r = float(np.angle(r_TE * np.conj(r_TM)) * 180 / np.pi)
     delta_t = float(np.angle(t_TE * np.conj(t_TM)) * 180 / np.pi)
+    delta_s = float(np.angle(r_TE) * 180 / np.pi)   # phase of s-pol reflection (deg)
+    delta_p = float(np.angle(r_TM) * 180 / np.pi)   # phase of p-pol reflection (deg)
 
-    return [R_TE, R_TM, T_TE, T_TM, delta_r, delta_t]
+    return [R_TE, R_TM, T_TE, T_TM, delta_r, delta_t, delta_s, delta_p]
 
 
 # ---------------------------------------------------------------------------
@@ -112,9 +116,11 @@ def calculate_spr(
     )
     h = [0.0] + [lay["d_nm"] for lay in layers] + [0.0]
 
-    Rs, Rp, *_ = multilayer(nu, h, lam_nm, angle_deg)
+    Rs, Rp, _T_TE, _T_TM, _delta_r, _delta_t, delta_s, delta_p = multilayer(
+        nu, h, lam_nm, angle_deg
+    )
 
-    absorption     = float(np.clip(1.0 - Rp, 0.0, 1.0))
+    absorption      = float(np.clip(1.0 - Rp, 0.0, 1.0))
     field_intensity = absorption
 
     return {
@@ -123,4 +129,6 @@ def calculate_spr(
         "Rs":              float(np.clip(Rs, 0.0, 1.0)),
         "absorption":      absorption,
         "field_intensity": field_intensity,
+        "delta_s":         delta_s,
+        "delta_p":         delta_p,
     }

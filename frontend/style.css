@@ -429,6 +429,35 @@ body {
   #params-box {
     order: 5;
     grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+  }
+
+  #params-box h2 {
+    flex: 0 0 100%;
+    margin-bottom: 0;
+  }
+
+  #params-box .field {
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 0;
+    min-width: 0;
+  }
+
+  #params-box .field label {
+    white-space: nowrap;
+    font-size: 10px;
+  }
+
+  #params-box .field input[type="number"] {
+    flex: 1;
+    min-width: 0;
+    width: 0;
   }
 
   /* ── Fused angle + scan panel ─────────────────────────────────────────

@@ -6,15 +6,23 @@
 const API = "";           // same origin — change to "http://localhost:8000" for dev
 
 // ============================================================
-//  Canvas geometry (logical px — CSS scales the element)
+//  Canvas geometry — base values at reference width CW_BASE
+//  All variables are updated proportionally by resizeCanvas().
 // ============================================================
-const CW      = 700;      // canvas logical width
-const CH      = 288;      // canvas logical height
-const CX      = CW / 2;  // centre of the flat face (hit point of the beam)
-const CY      = 154;      // y of the flat face  (CY + R must be < CH)
-const R       = 120;      // half-disk radius (80% of previous 150)
-const GOLD_H  = 7;        // visual gold thickness (px)
-const BEAM_EXT = 70;      // how far the beam extends outside the disk
+const CW_BASE    = 700;   // reference canvas width
+const CH_BASE    = 279;   // reference canvas height — CH = CY + (old CH − old CY)
+const CY_BASE    = 109;   // y of flat face — top medium = (CY−GOLD_H)/2 of original
+const R_BASE     = 140;   // half-disk radius at reference size (was 120)
+const GOLD_H_BASE  =  8;  // visual gold thickness at reference (was 7)
+const BEAM_EXT_BASE = 80; // beam extension outside disk at reference (was 70)
+
+let CW       = CW_BASE;
+let CH       = CH_BASE;
+let CX       = CW / 2;
+let CY       = CY_BASE;
+let R        = R_BASE;
+let GOLD_H   = GOLD_H_BASE;
+let BEAM_EXT = BEAM_EXT_BASE;
 
 // ============================================================
 //  State
@@ -34,6 +42,27 @@ let lookupTable = [];   // pre-computed dense angle scan for instant drag interp
 // ============================================================
 const canvas       = document.getElementById("diagram");
 const ctx          = canvas.getContext("2d");
+
+// ============================================================
+//  Responsive canvas — fills #canvas-wrap width on every resize
+// ============================================================
+function resizeCanvas() {
+  const w = canvas.parentElement.clientWidth;
+  if (!w || w === CW) return;
+  const s  = w / CW_BASE;
+  CW       = w;
+  CH       = Math.round(CH_BASE    * s);
+  CX       = w / 2;
+  CY       = Math.round(CY_BASE    * s);
+  R        = Math.round(R_BASE     * s);
+  GOLD_H   = Math.max(2, Math.round(GOLD_H_BASE   * s));
+  BEAM_EXT = Math.round(BEAM_EXT_BASE * s);
+  canvas.width  = CW;
+  canvas.height = CH;
+  draw(angle, lastResult);
+}
+new ResizeObserver(resizeCanvas).observe(canvas.parentElement);
+
 const angleDisplay = document.getElementById("angle-display");
 const angleSlider  = document.getElementById("angle-slider");
 const angleInput   = document.getElementById("angle-input");
@@ -257,7 +286,7 @@ function drawNormal() {
 function drawAngleArc(theta_deg) {
   if (theta_deg < 2) return;
   const theta = (theta_deg * Math.PI) / 180;
-  const arcR  = 42;
+  const arcR  = Math.round(R * 0.3);   // scales with prism radius
 
   ctx.save();
   ctx.strokeStyle = "hsla(204, 68%, 55%, 0.55)";  /* --blue-400 */

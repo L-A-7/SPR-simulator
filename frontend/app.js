@@ -52,6 +52,7 @@ const scanStatus   = document.getElementById("scan-status");
 // ============================================================
 function chartColors() {
   const dark = document.documentElement.dataset.theme === "dark";
+  const css  = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   return dark ? {
     paper: "hsl(204, 70%, 27%)",    /* --blue-800 = --bg-deep  */
     plot:  "hsl(204, 72%, 18%)",    /* --blue-900              */
@@ -61,8 +62,8 @@ function chartColors() {
   } : {
     paper: "hsl(204, 70%, 27%)",    /* --blue-800 — border area */
     plot:  "#ffffff",               /* white inner plot         */
-    font:  "#ffffff",               /* --text-on-deep           */
-    axis:  "hsla(0, 0%, 100%, 0.75)",
+    font:  "#000000",               /* black on white plot      */
+    axis:  css("--text-dim"),       /* mirrors CSS --text-dim   */
     grid:  "hsl(204, 60%, 82%)",    /* --blue-200               */
   };
 }

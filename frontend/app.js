@@ -10,11 +10,12 @@ const API = "";           // same origin — change to "http://localhost:8000" f
 //  All variables are updated proportionally by resizeCanvas().
 // ============================================================
 const CW_BASE    = 700;   // reference canvas width
-const CH_BASE    = 279;   // reference canvas height — CH = CY + (old CH − old CY)
-const CY_BASE    = 109;   // y of flat face — top medium = (CY−GOLD_H)/2 of original
-const R_BASE     = 140;   // half-disk radius at reference size (was 120)
+// const CH_BASE    = 279;   // reference canvas height — CH = CY + (old CH − old CY)
+const CH_BASE    = 300;   // reference canvas height — CH = CY + (old CH − old CY)
+const CY_BASE    = 100;   // y of flat face — top medium = (CY−GOLD_H)/2 of original
+const R_BASE     = 180;   // half-disk radius at reference size (was 120)
 const GOLD_H_BASE  =  8;  // visual gold thickness at reference (was 7)
-const BEAM_EXT_BASE = 70; // beam extension outside disk at reference (was 70)
+const BEAM_EXT_BASE = 80; // beam extension outside disk at reference (was 70)
 
 let CW       = CW_BASE;
 let CH       = CH_BASE;
@@ -51,11 +52,15 @@ function resizeCanvas() {
   if (!w || w === CW) return;
   const s  = w / CW_BASE;
   CW       = w;
-  CH       = Math.round(CH_BASE    * s);
   CX       = w / 2;
-  CY       = Math.round(CY_BASE    * s);
-  R        = Math.round(R_BASE     * s);
-  GOLD_H   = Math.max(2, Math.round(GOLD_H_BASE   * s));
+  // CH       = Math.round(CH_BASE    * s);
+  // CY       = Math.round(CY_BASE    * s);
+  // R        = Math.round(R_BASE     * s);
+  // GOLD_H   = Math.max(2, Math.round(GOLD_H_BASE   * s));
+  CH       = CH_BASE;
+  CY       = CY_BASE;
+  R        = R_BASE;
+  GOLD_H   = GOLD_H_BASE;
   BEAM_EXT = Math.round(BEAM_EXT_BASE * s);
   canvas.width  = CW;
   canvas.height = CH;
@@ -292,12 +297,8 @@ function drawAngleArc(theta_deg) {
   ctx.strokeStyle = "hsla(204, 68%, 55%, 0.55)";  /* --blue-400 */
   ctx.lineWidth = 1.5;
 
-  // Arc between normal (up = −π/2) and the incident beam direction
-  // Normal points up → angle −π/2 in canvas.
-  // Incident beam comes from lower-left, direction toward CX,CY.
-  // Beam direction from hit point going down-left: angle = π/2 + θ  (from +x axis, CW)
-  // Arc from −π/2 (up/normal) to  π/2 + θ going clockwise (increasing angle)
-  const normalAngle = -Math.PI / 2;        // pointing up in canvas
+  // Arc between normal and the incident beam direction
+  const normalAngle = Math.PI / 2;        // pointing up in canvas
   const beamAngle   = Math.PI / 2 + theta; // pointing down-left
 
   ctx.beginPath();
@@ -487,7 +488,8 @@ function interpolateResult(a) {
 //  Angle update
 // ============================================================
 function setAngleUI(a) {
-  angle = Math.max(5, Math.min(85, a));
+  // angle = Math.max(5, Math.min(85, a));
+  angle = Math.max(0, Math.min(90, a));
   const disp = angle.toFixed(1);
   angleDisplay.textContent = disp;
   obsTheta.textContent     = disp;

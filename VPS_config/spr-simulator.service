@@ -1,0 +1,12 @@
+[Unit]
+Description=SPR Simulator
+After=network.target
+
+[Service]
+User=l
+WorkingDirectory=/home/l/la-7.eu/SPR-simulator/backend
+ExecStart=/home/l/la-7.eu/SPR-simulator/backend/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8001
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

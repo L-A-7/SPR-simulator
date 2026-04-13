@@ -14,7 +14,7 @@ const CH_BASE    = 279;   // reference canvas height — CH = CY + (old CH − o
 const CY_BASE    = 109;   // y of flat face — top medium = (CY−GOLD_H)/2 of original
 const R_BASE     = 140;   // half-disk radius at reference size (was 120)
 const GOLD_H_BASE  =  8;  // visual gold thickness at reference (was 7)
-const BEAM_EXT_BASE = 80; // beam extension outside disk at reference (was 70)
+const BEAM_EXT_BASE = 70; // beam extension outside disk at reference (was 70)
 
 let CW       = CW_BASE;
 let CH       = CH_BASE;

@@ -349,10 +349,6 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
   ctx.lineTo(CX, CY);
   ctx.stroke();
 
-  // Arrow head at the hit point
-  _arrowHead(CX, CY, theta + Math.PI, beamColor);
-
-
   ctx.shadowBlur = 0;
 
   // --- Reflected beam ---
@@ -369,23 +365,22 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
   ctx.setLineDash([]);
   ctx.shadowBlur = 0;
 
-  ctx.restore();
-}
-
-function _arrowHead(x, y, dir, color) {
-  const L = 10, W = 5;
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(dir);
-  ctx.fillStyle = color;
+  // --- _arrowHead ---
+  const L = 15, W = 5;
+  // ctx.save();
+  ctx.translate(rx2, ry2);
+  ctx.rotate(Math.PI/2-theta);
+  ctx.fillStyle = beamColor;
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.lineTo(-L, W);
   ctx.lineTo(-L, -W);
   ctx.closePath();
   ctx.fill();
+
   ctx.restore();
 }
+
 
 function drawLabels(theta_deg) {
   const fontSize = Math.max(10, Math.round(12 * CW / CW_BASE));

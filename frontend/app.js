@@ -384,7 +384,8 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
 
 
 function drawLabels(theta_deg) {
-  const fontSize = Math.max(10, Math.round(12 * CW / CW_BASE));
+  // const fontSize = Math.max(10, Math.round(12 * CW / CW_BASE));
+  const fontSize = 16;
   ctx.save();
   ctx.font = `${fontSize}px 'Segoe UI', sans-serif`;
 
@@ -401,10 +402,11 @@ function drawLabels(theta_deg) {
   // Glass label (inside half-disk)
   ctx.fillStyle = "hsla(0, 0%, 100%, 0.80)";    /* white — better contrast */
   ctx.textAlign = "center";
-  ctx.fillText("Glass  n = " + _paramVal("prism-n"), CX, CY + R * 0.5);
+  ctx.fillText("Glass  n = " + _paramVal("prism-n"), CX, CY + R * 0.75);
 
   // λ label (bottom-right of diagram)
-  ctx.fillStyle = "hsla(204, 68%, 55%, 0.4)";   /* --blue-400 */
+  // ctx.fillStyle = "hsla(204, 68%, 55%, 0.4)";   /* --blue-400 */
+  ctx.fillStyle = "hsla(0, 0%, 100%, 0.80)";    /* white — better contrast */
   ctx.textAlign = "right";
   ctx.fillText("λ = " + _paramVal("lam-nm") + " nm", CW - 8, CH - 6);
 

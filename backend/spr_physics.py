@@ -101,9 +101,9 @@ def multilayer(nu: np.ndarray, h: list, wav: float, theta: float) -> list:
 def calculate_spr(
     angle_deg: float,
     lam_nm: float = 632.8,
-    n_prism: complex = 1.63 + 0j,
+    n_prism: complex = 1.5 + 0j,
     layers: list | None = None,
-    n_top: complex = 1.333 + 0j,
+    n_top: complex = 1.33 + 0j,
 ) -> dict:
     """Compute SPR observables for a single angle using the TMM."""
     if layers is None:

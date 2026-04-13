@@ -112,6 +112,7 @@ const rvRs         = document.getElementById("rv-rs");
 const rvAbs        = document.getElementById("rv-abs");
 const btnScan      = document.getElementById("btn-scan");
 const btnStop      = document.getElementById("btn-stop");
+const btnExport    = document.getElementById("btn-export");
 const scanStatus   = document.getElementById("scan-status");
 
 // ============================================================
@@ -205,8 +206,7 @@ function initChart2() {
   };
 
   const traces = [
-    { x: [], y: [], name: "δs (s-pol)", mode: "lines", line: { color: CLR_RED_400,  width: 2 } },
-    { x: [], y: [], name: "δp (p-pol)", mode: "lines", line: { color: CLR_BLUE_400, width: 2 } },
+    { x: [], y: [], name: "δp − δs", mode: "lines", line: { color: CLR_BLUE_400, width: 2 } },
   ];
 
   Plotly.newPlot("charts2", traces, layout, { responsive: true, displayModeBar: false });
@@ -216,7 +216,27 @@ function initChart2() {
 function resetChart() {
   scanData = { angles: [], Rp: [], Rs: [], field: [], delta_s: [], delta_p: [] };
   if (chartReady)  Plotly.restyle("charts",  { x: [[], [], []], y: [[], [], []] }, [0, 1, 2]);
-  if (chart2Ready) Plotly.restyle("charts2", { x: [[], []],     y: [[], []]     }, [0, 1]);
+  if (chart2Ready) Plotly.restyle("charts2", { x: [[]], y: [[]] }, [0]);
+}
+
+/* Pre-set chart2 y-axis range using the lookup table so the axis fits
+   the data before streaming begins. Restricted to the scan angle window. */
+function setChart2RangeFromLookup() {
+  if (!chart2Ready || !lookupTable.length) return;
+  const amin = parseFloat(_paramVal("scan-min"));
+  const amax = parseFloat(_paramVal("scan-max"));
+  const subset = lookupTable.filter(r => r.angle >= amin && r.angle <= amax);
+  if (!subset.length) return;
+
+  // Unwrap delta_s and delta_p, then compute their difference
+  const ds = unwrap(subset.map(r => r.delta_s));
+  const dp = unwrap(subset.map(r => r.delta_p));
+  const diff = dp.map((v, i) => v - ds[i]);
+  const lo = Math.min(...diff);
+  const hi = Math.max(...diff);
+  const pad = Math.max((hi - lo) * 0.08, 5);   // 8 % padding, minimum 5°
+
+  Plotly.relayout("charts2", { "yaxis.range": [lo - pad, hi + pad], "yaxis.autorange": false });
 }
 
 function appendChartPoint(a, res) {
@@ -237,8 +257,8 @@ function appendChartPoint(a, res) {
   if (chart2Ready) {
     Plotly.extendTraces(
       "charts2",
-      { x: [[a], [a]], y: [[res.delta_s], [res.delta_p]] },
-      [0, 1]
+      { x: [[a]], y: [[res.delta_p - res.delta_s]] },
+      [0]
     );
   }
 }
@@ -477,7 +497,7 @@ function drawLabels(theta_deg) {
   ctx.fillText("Glass  n = " + _paramVal("prism-n"), CX, CY + R * 0.75);
 
   // λ label (bottom-right)
-  ctx.fillStyle = CLR_LBL_RED;
+  ctx.fillStyle = CLR_LBL_GOLD;
   ctx.textAlign = "right";
   ctx.fillText("λ = " + _paramVal("lam-nm") + " nm", CW - 8, CH - 6);
 
@@ -730,8 +750,10 @@ function startScan() {
   if (scanWS) return;
 
   resetChart();
+  setChart2RangeFromLookup();
   btnScan.style.display = "none";
   btnStop.style.display = "block";
+  btnExport.style.display = "none";
   scanStatus.textContent = "Scanning…";
 
   const wsProto = location.protocol === "https:" ? "wss" : "ws";
@@ -797,6 +819,60 @@ function finishScan(msg) {
   btnStop.style.display = "none";
   btnScan.style.display = "block";
   scanStatus.textContent = msg;
+  if (scanData.angles.length) btnExport.style.display = "block";
+}
+
+// ============================================================
+//  Export
+// ============================================================
+function unwrap(phases) {
+  const result = [...phases];
+  for (let i = 1; i < result.length; i++) {
+    let diff = result[i] - result[i - 1];
+    while (diff >  180) diff -= 360;
+    while (diff < -180) diff += 360;
+    result[i] = result[i - 1] + diff;
+  }
+  return result;
+}
+
+function exportTSV() {
+  const exportStatus = document.getElementById("export-status");
+  if (!scanData.angles.length) {
+    exportStatus.textContent = "No scan data.";
+    return;
+  }
+  const ds = unwrap(scanData.delta_s);
+  const dp = unwrap(scanData.delta_p);
+  const now = new Date().toISOString().replace("T", " ").slice(0, 19);
+  const lines = [
+    `# SPR Simulator — Scan Results`,
+    `# Date: ${now}`,
+    `# Wavelength: ${_paramVal("lam-nm")} nm`,
+    `# Gold thickness: ${_paramVal("gold-nm")} nm`,
+    `# Prism n: ${_paramVal("prism-n")}`,
+    `# Top medium n: ${_paramVal("top-n")}`,
+    `# Angle range: ${scanData.angles[0].toFixed(1)}° – ${scanData.angles[scanData.angles.length - 1].toFixed(1)}°, ${scanData.angles.length} steps`,
+    `# Angle (deg.)\tRs\tRp\tdelta_s (deg.)\tdelta_p (deg.)\tAbsorption`,
+  ];
+  for (let i = 0; i < scanData.angles.length; i++) {
+    lines.push([
+      scanData.angles[i].toFixed(4),
+      scanData.Rs[i].toFixed(6),
+      scanData.Rp[i].toFixed(6),
+      ds[i].toFixed(4),
+      dp[i].toFixed(4),
+      scanData.field[i].toFixed(6),
+    ].join("\t"));
+  }
+  const blob = new Blob([lines.join("\n")], { type: "text/tab-separated-values" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `spr_scan_${now.replace(/[: ]/g, "-")}.tsv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  exportStatus.textContent = `Exported ${scanData.angles.length} points.`;
 }
 
 // ============================================================
@@ -804,6 +880,9 @@ function finishScan(msg) {
 // ============================================================
 initChart();
 initChart2();
+
+// Export
+document.getElementById("btn-export").addEventListener("click", exportTSV);
 
 // Theme toggle
 document.getElementById("theme-toggle").addEventListener("click", () => {

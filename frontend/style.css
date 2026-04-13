@@ -33,6 +33,20 @@
   --canvas-bg: transparent;
 }
 
+/* Keep Run Scan button, angle value and angle slider gold in dark theme */
+[data-theme="dark"] .btn-scan {
+  background: var(--gold-550);
+  color: var(--text-heading);
+}
+
+[data-theme="dark"] .angle-big {
+  color: var(--gold-550);
+}
+
+[data-theme="dark"] .field input[type="range"] {
+  accent-color: var(--gold-550);
+}
+
 /* ===== Light theme ======================================================= */
 [data-theme="light"] {
   --bg: var(--grey-50);
@@ -332,6 +346,12 @@ body {
   color: var(--text-heading);
 }
 
+.btn-scan-2 {
+  background: var(--blue-400);
+  color: var(--text-heading);
+  margin-top: 6px;
+}
+
 .btn-stop {
   background: var(--red);
   color: var(--text-on-deep);
@@ -344,6 +364,11 @@ body {
   color: var(--text-dim);
   margin-top: 5px;
   min-height: 13px;
+}
+
+/* Export button hidden until scan data is available (shown via JS) */
+#btn-export {
+  display: none;
 }
 
 /* ===== Charts panel (Curves 1) ========================================== */
@@ -401,14 +426,6 @@ body {
     grid-column: 1 / -1;
   }
 
-  #curves-display-box {
-    order: 3;
-  }
-
-  #export-box {
-    order: 4;
-  }
-
   #params-box {
     order: 5;
     grid-column: 1 / -1;
@@ -420,15 +437,15 @@ body {
    * Layout:
    *   row 1 | title (Angle Scan)
    *   row 2 | angle-val | slider · · · · · · · · · · · · · ·
-   *   row 3 | scan-params (From / To / Steps) · · | ▶ Run Scan
+   *   row 3 | scan-params (From / To / Steps) · · | ▶ Run Scan | ↓ Export
    * ─────────────────────────────────────────────────────────────────── */
   #angle-scan-wrap {
     display: grid;
     grid-template-areas:
-      "title      title       title"
-      "angle-val  slider      slider"
-      "scan-params scan-params run-btn";
-    grid-template-columns: auto 1fr auto;
+      "title       title        title    title"
+      "angle-val   slider       slider   slider"
+      "scan-params scan-params  run-btn  export-btn";
+    grid-template-columns: auto 1fr auto auto;
     gap: 6px 8px;
     align-items: center;
     background: var(--panel);
@@ -447,7 +464,8 @@ body {
   #angle-box h2,
   #angle-manual-field,
   #btn-stop,
-  #scan-status {
+  #scan-status,
+  #export-status {
     display: none;
   }
 
@@ -511,5 +529,15 @@ body {
     padding: 7px 10px;
     white-space: nowrap;
     align-self: stretch;
+  }
+
+  /* Export button: same row as Run Scan, auto-width */
+  #btn-export {
+    grid-area: export-btn;
+    width: auto;
+    padding: 7px 10px;
+    white-space: nowrap;
+    align-self: stretch;
+    margin-top: 0;
   }
 }

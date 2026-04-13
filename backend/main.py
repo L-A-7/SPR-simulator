@@ -37,11 +37,13 @@ def api_calculate(
     angle: float,
     lam_nm: float = 632.8,
     gold_nm: float = 50.0,
-    top_n: float = 1.333,
-    prism_n: float = 1.63,
+    gold_re: float = 0.18,
+    gold_im: float = 3.4,
+    top_n: float = 1.33,
+    prism_n: float = 1.5,
 ) -> dict:
     """Return SPR observables for a single incidence angle."""
-    layers = [{"n": complex(0.18, 3.4), "d_nm": gold_nm}]
+    layers = [{"n": complex(gold_re, gold_im), "d_nm": gold_nm}]
     return calculate_spr(
         angle_deg=angle,
         lam_nm=lam_nm,
@@ -58,11 +60,13 @@ def api_lookup(
     n_steps: int = 250,
     lam_nm: float = 632.8,
     gold_nm: float = 50.0,
-    top_n: float = 1.333,
-    prism_n: float = 1.63,
+    gold_re: float = 0.18,
+    gold_im: float = 3.4,
+    top_n: float = 1.33,
+    prism_n: float = 1.5,
 ) -> list:
     """Return a dense angle scan as a JSON array for client-side interpolation."""
-    layers = [{"n": complex(0.18, 3.4), "d_nm": gold_nm}]
+    layers = [{"n": complex(gold_re, gold_im), "d_nm": gold_nm}]
     angles = np.linspace(angle_min, angle_max, n_steps)
     return [
         calculate_spr(
@@ -124,11 +128,13 @@ async def ws_scan(websocket: WebSocket) -> None:
         n_steps    = int(params.get("n_steps",      150))
         lam_nm     = float(params.get("lam_nm",     632.8))
         gold_nm    = float(params.get("gold_nm",    50.0))
-        top_n      = float(params.get("top_n",      1.333))
-        prism_n    = float(params.get("prism_n",    1.63))
+        gold_re    = float(params.get("gold_re",    0.18))
+        gold_im    = float(params.get("gold_im",    3.4))
+        top_n      = float(params.get("top_n",      1.33))
+        prism_n    = float(params.get("prism_n",    1.5))
         duration_s = float(params.get("duration_s", 4.0))
 
-        layers = [{"n": complex(0.18, 3.4), "d_nm": gold_nm}]
+        layers = [{"n": complex(gold_re, gold_im), "d_nm": gold_nm}]
 
         # Pre-compute all values (fast, CPU-bound)
         angles = np.linspace(angle_min, angle_max, n_steps)

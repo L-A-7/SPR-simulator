@@ -164,6 +164,62 @@ body {
   color: var(--gold-700);
 }
 
+/* ===== Coloured parameter labels ======================================== */
+#params-box .lbl-lambda { color: var(--red-400); }
+#params-box .lbl-hgold  { color: var(--gold-500); }
+
+/* ===== n-gold complex input group ======================================= */
+.ngold-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0;   /* last item — no extra gap needed */
+}
+
+.ngold-box {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3px;
+  border: 1.5px solid var(--gold-500);
+  border-radius: 5px;
+  padding: 2px 4px;
+}
+
+.ngold-box > label {
+  font-size: 11px;
+  color: var(--gold-500);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-right: 2px;
+}
+
+.ngold-box input[type="number"] {
+  flex: 1;
+  min-width: 0;
+  width: 0;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--input-text);
+  padding: 3px 5px;
+  font-size: 12px;
+}
+
+.ngold-box input[type="number"]:focus {
+  outline: none;
+  border-color: var(--gold-500);
+}
+
+.ngold-sep {
+  flex-shrink: 0;
+  color: var(--gold-500);
+  font-size: 11px;
+  font-weight: 700;
+}
+
 [data-theme="light"] .obs-val {
   color: var(--accent);
 }
@@ -229,6 +285,12 @@ body {
 #canvas-wrap {
   cursor: crosshair;
   background: var(--canvas-bg);
+  position: relative;
+}
+
+/* Hidden everywhere by default; shown only on mobile via media query */
+#btn-scan-canvas {
+  display: none;
 }
 
 #diagram {
@@ -396,6 +458,17 @@ body {
 
 /* ===== Mobile layout ===================================================== */
 @media (max-width: 700px) {
+  /* Canvas-overlay Run Scan button */
+  #btn-scan-canvas {
+    display: block;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: auto;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
   #app {
     padding: 6px;
     gap: 8px;
@@ -426,30 +499,33 @@ body {
     grid-column: 1 / -1;
   }
 
+  /* 3×2 grid on mobile. Each .field is a flex row:
+     label left-aligned, 4 px gap, input fills the rest. */
   #params-box {
     order: 5;
     grid-column: 1 / -1;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 6px 8px;
   }
 
   #params-box h2 {
-    flex: 0 0 100%;
+    grid-column: 1 / -1;
     margin-bottom: 0;
   }
 
   #params-box .field {
-    flex: 1;
+    display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 4px;
     margin-bottom: 0;
     min-width: 0;
+    gap: 4px;
   }
 
   #params-box .field label {
+    flex-shrink: 0;
+    text-align: left;
     white-space: nowrap;
     font-size: 10px;
   }
@@ -460,20 +536,34 @@ body {
     width: 0;
   }
 
+  /* n-gold group spans the remaining 2 columns in row 2 */
+  #params-box .ngold-group {
+    grid-column: span 2;
+  }
+
+  /* Slightly smaller text inside the gold border on mobile */
+  #params-box .ngold-box > label {
+    font-size: 10px;
+  }
+
+  #params-box .ngold-sep {
+    font-size: 10px;
+  }
+
   /* ── Fused angle + scan panel ─────────────────────────────────────────
    * The wrapper becomes the visible panel; the two child boxes dissolve
    * (display:contents) so their children participate in this grid.
    * Layout:
    *   row 1 | title (Angle Scan)
-   *   row 2 | angle-val | slider · · · · · · · · · · · · · ·
-   *   row 3 | scan-params (From / To / Steps) · · | ▶ Run Scan | ↓ Export
+   *   row 2 | angle-val | slider · · · · · · · · · | ▶ Run Scan
+   *   row 3 | scan-params (From / To / Steps) · · · | ↓ Export
    * ─────────────────────────────────────────────────────────────────── */
   #angle-scan-wrap {
     display: grid;
     grid-template-areas:
-      "title       title        title    title"
-      "angle-val   slider       slider   slider"
-      "scan-params scan-params  run-btn  export-btn";
+      "title       title        title       title"
+      "angle-val   slider       slider      run-btn"
+      "scan-params scan-params  scan-params export-btn";
     grid-template-columns: auto 1fr auto auto;
     gap: 6px 8px;
     align-items: center;

@@ -112,10 +112,11 @@ const obsLam       = document.getElementById("obs-lam");
 const rvRp         = document.getElementById("rv-rp");
 const rvRs         = document.getElementById("rv-rs");
 const rvAbs        = document.getElementById("rv-abs");
-const btnScan      = document.getElementById("btn-scan");
-const btnStop      = document.getElementById("btn-stop");
-const btnExport    = document.getElementById("btn-export");
-const scanStatus   = document.getElementById("scan-status");
+const btnScan       = document.getElementById("btn-scan");
+const btnStop       = document.getElementById("btn-stop");
+const btnExport     = document.getElementById("btn-export");
+const btnScanCanvas = document.getElementById("btn-scan-canvas");
+const scanStatus    = document.getElementById("scan-status");
 
 // Disable Plotly drag-to-zoom/pan on touch devices to avoid accidental
 // axis rescaling while scrolling the page.
@@ -506,10 +507,12 @@ function drawLabels(theta_deg) {
   ctx.textAlign = "center";
   ctx.fillText("Glass  n = " + _paramVal("prism-n"), CX, CY + R * 0.75);
 
-  // λ label (bottom-right)
-  ctx.fillStyle = CLR_LBL_GOLD;
-  ctx.textAlign = "right";
-  ctx.fillText("λ = " + _paramVal("lam-nm") + " nm", CW - 8, CH - 6);
+  // λ label (bottom-right) — hidden on mobile to leave room for the canvas Run Scan button
+  if (window.innerWidth > 700) {
+    ctx.fillStyle = CLR_LBL_GOLD;
+    ctx.textAlign = "right";
+    ctx.fillText("λ = " + _paramVal("lam-nm") + " nm", CW - 8, CH - 6);
+  }
 
   ctx.restore();
 }
@@ -526,6 +529,8 @@ async function fetchCalculate(a) {
     angle:   a.toFixed(2),
     lam_nm:  _paramVal("lam-nm"),
     gold_nm: _paramVal("gold-nm"),
+    gold_re: _paramVal("gold-re"),
+    gold_im: _paramVal("gold-im"),
     top_n:   _paramVal("top-n"),
     prism_n: _paramVal("prism-n"),
   });
@@ -552,6 +557,8 @@ async function buildLookupTable() {
     angle_min: 0, angle_max: 89.5, n_steps: 250,
     lam_nm:  _paramVal("lam-nm"),
     gold_nm: _paramVal("gold-nm"),
+    gold_re: _paramVal("gold-re"),
+    gold_im: _paramVal("gold-im"),
     top_n:   _paramVal("top-n"),
     prism_n: _paramVal("prism-n"),
   });
@@ -742,7 +749,7 @@ angleInput.addEventListener("change", () => {
 });
 
 // Rebuild lookup table when physics params change, then redraw
-["lam-nm", "gold-nm", "prism-n", "top-n"].forEach((id) => {
+["lam-nm", "gold-nm", "gold-re", "gold-im", "prism-n", "top-n"].forEach((id) => {
   document.getElementById(id).addEventListener("change", async () => {
     if (id === "lam-nm") obsLam.textContent = _paramVal("lam-nm");
     await buildLookupTable();
@@ -754,6 +761,7 @@ angleInput.addEventListener("change", () => {
 //  Scan
 // ============================================================
 btnScan.addEventListener("click", startScan);
+btnScanCanvas.addEventListener("click", startScan);
 btnStop.addEventListener("click", stopScan);
 
 function startScan() {
@@ -762,6 +770,7 @@ function startScan() {
   resetChart();
   setChart2RangeFromLookup();
   btnScan.style.display = "none";
+  btnScanCanvas.style.display = "none";
   btnStop.style.display = "block";
   btnExport.style.display = "none";
   scanStatus.textContent = "Scanning…";
@@ -780,6 +789,8 @@ function startScan() {
       n_steps:    parseInt(_paramVal("scan-steps")),
       lam_nm:     parseFloat(_paramVal("lam-nm")),
       gold_nm:    parseFloat(_paramVal("gold-nm")),
+      gold_re:    parseFloat(_paramVal("gold-re")),
+      gold_im:    parseFloat(_paramVal("gold-im")),
       top_n:      parseFloat(_paramVal("top-n")),
       prism_n:    parseFloat(_paramVal("prism-n")),
       duration_s: 4.0,
@@ -828,6 +839,7 @@ function finishScan(msg) {
   scanWS = null;
   btnStop.style.display = "none";
   btnScan.style.display = "block";
+  btnScanCanvas.style.display = "";   // let CSS media query decide visibility
   scanStatus.textContent = msg;
   if (scanData.angles.length) btnExport.style.display = "block";
 }

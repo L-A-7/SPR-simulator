@@ -388,8 +388,9 @@ function _arrowHead(x, y, dir, color) {
 }
 
 function drawLabels(theta_deg) {
+  const fontSize = Math.max(10, Math.round(12 * CW / CW_BASE));
   ctx.save();
-  ctx.font = "12px 'Segoe UI', sans-serif";
+  ctx.font = `${fontSize}px 'Segoe UI', sans-serif`;
 
   // Top medium label — upper part of the top-medium zone
   ctx.fillStyle = "hsla(204, 68%, 55%, 0.55)";  /* --blue-400 */

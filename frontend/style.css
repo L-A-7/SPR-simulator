@@ -1,51 +1,58 @@
 /* ===== Reset & base ===================================================== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 /* ===== Shared / theme-independent tokens ================================ */
 :root {
-  --accent:  var(--blue-400);
+  --accent: var(--blue-400);
   --accent2: var(--gold-500);
-  --red:     var(--red-500);
-  --gold:    var(--gold-600);
-  --radius:  8px;
+  --red: var(--red-500);
+  --gold: var(--gold-600);
+  --radius: 8px;
 }
 
 /* ===== Dark theme ======================================================== */
 [data-theme="dark"] {
-  --bg:              var(--blue-900);
-  --panel:           var(--bg-deep);
-  --border:          var(--blue-700);
-  --text:            var(--text-on-deep);
-  --text-dim:        var(--blue-400);
-  --input-bg:        var(--blue-900);
-  --input-text:      var(--text-on-deep);
-  --obs-bar-bg:      transparent;
-  --obs-bar-border:  var(--blue-700);
-  --obs-text:        var(--text-on-deep);
-  --obs-dim:         var(--blue-400);
-  --obs-sep-color:   var(--blue-700);
-  --canvas-bg:       transparent;
+  --bg: var(--blue-900);
+  --panel: var(--bg-deep);
+  --border: var(--blue-700);
+  --text: var(--text-on-deep);
+  --text-dim: var(--blue-400);
+  --input-bg: var(--blue-900);
+  --input-text: var(--text-on-deep);
+  --obs-bar-bg: transparent;
+  --obs-bar-border: var(--blue-700);
+  --obs-text: var(--text-on-deep);
+  --obs-dim: var(--blue-400);
+  --obs-sep-color: var(--blue-700);
+  --canvas-bg: transparent;
 }
 
 /* ===== Light theme ======================================================= */
 [data-theme="light"] {
-  --bg:              var(--grey-50);
-  --panel:           var(--bg-deep);
-  --border:          var(--blue-700);
-  --text:            var(--text-on-deep);
-  --text-dim:        hsla(0, 0%, 100%, 0.85);
-  --input-bg:        #fff;
-  --input-text:      var(--text-heading);
-  --accent:          var(--gold-550);
-  --obs-bar-bg:      var(--blue-800);
-  --obs-bar-border:  var(--blue-900);
-  --obs-text:        var(--text-on-deep);
-  --obs-dim:         hsla(0, 0%, 100%, 0.60);
-  --obs-sep-color:   hsla(0, 0%, 100%, 0.25);
-  --canvas-bg:       var(--blue-600);
+  --bg: var(--grey-50);
+  --panel: var(--bg-deep);
+  --border: var(--blue-700);
+  --text: var(--text-on-deep);
+  --text-dim: hsla(0, 0%, 100%, 0.85);
+  --input-bg: #fff;
+  --input-text: var(--text-heading);
+  --accent: var(--gold-550);
+  --obs-bar-bg: var(--blue-800);
+  --obs-bar-border: var(--blue-900);
+  --obs-text: var(--text-on-deep);
+  --obs-dim: hsla(0, 0%, 100%, 0.60);
+  --obs-sep-color: hsla(0, 0%, 100%, 0.25);
+  --canvas-bg: var(--blue-600);
 }
 
-html, body {
+html,
+body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Segoe UI', system-ui, sans-serif;
@@ -102,7 +109,7 @@ html, body {
 .obs-lbl {
   font-size: 10px;
   color: var(--obs-dim);
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   letter-spacing: 0.5px;
 }
 
@@ -123,13 +130,29 @@ html, body {
   font-size: 14px;
 }
 
-.obs-theta { color: var(--accent); }
-.rv-rp     { color: var(--blue-400); }
-.rv-rs     { color: var(--red-400); }
-.rv-abs    { color: var(--gold-500); }
-.rv-field  { color: var(--gold-700); }
+.obs-theta {
+  color: var(--accent);
+}
 
-[data-theme="light"] .obs-val { color: var(--accent); }
+.rv-rp {
+  color: var(--blue-400);
+}
+
+.rv-rs {
+  color: var(--red-400);
+}
+
+.rv-abs {
+  color: var(--gold-500);
+}
+
+.rv-field {
+  color: var(--gold-700);
+}
+
+[data-theme="light"] .obs-val {
+  color: var(--accent);
+}
 
 /* ===== Theme toggle button ============================================== */
 #theme-toggle {
@@ -144,7 +167,10 @@ html, body {
   cursor: pointer;
   transition: opacity .15s;
 }
-#theme-toggle:hover { opacity: .75; }
+
+#theme-toggle:hover {
+  opacity: .75;
+}
 
 /* ===== Content row (left panel + main column) =========================== */
 #content-row {
@@ -216,7 +242,9 @@ html, body {
 
 /* scan-params wraps the From/To/Steps fields; restore the bottom gap
    that the last .field used to provide before the Run Scan button      */
-#scan-params { margin-bottom: 7px; }
+#scan-params {
+  margin-bottom: 7px;
+}
 
 /* ===== Placeholder panels =============================================== */
 .placeholder-panel {
@@ -235,7 +263,9 @@ html, body {
   margin-bottom: 7px;
 }
 
-.field:last-child { margin-bottom: 0; }
+.field:last-child {
+  margin-bottom: 0;
+}
 
 .field label {
   font-size: 11px;
@@ -283,12 +313,30 @@ html, body {
   cursor: pointer;
   transition: opacity .15s;
 }
-.btn:hover   { opacity: .85; }
-.btn:active  { opacity: .70; }
-.btn:disabled { opacity: .35; cursor: default; }
 
-.btn-scan { background: var(--accent); color: var(--text-heading); }
-.btn-stop { background: var(--red);    color: var(--text-on-deep); display: none; }
+.btn:hover {
+  opacity: .85;
+}
+
+.btn:active {
+  opacity: .70;
+}
+
+.btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+.btn-scan {
+  background: var(--accent);
+  color: var(--text-heading);
+}
+
+.btn-stop {
+  background: var(--red);
+  color: var(--text-on-deep);
+  display: none;
+}
 
 /* ===== Scan status ======================================================= */
 #scan-status {
@@ -322,13 +370,22 @@ html, body {
 
 /* ===== Mobile layout ===================================================== */
 @media (max-width: 700px) {
-  #app { padding: 6px; gap: 8px; }
+  #app {
+    padding: 6px;
+    gap: 8px;
+  }
 
   /* Stack the two columns */
-  #content-row { flex-direction: column; }
+  #content-row {
+    flex-direction: column;
+  }
 
   /* Canvas column comes first, controls column after */
-  #main-col   { order: 1; width: 100%; }
+  #main-col {
+    order: 1;
+    width: 100%;
+  }
+
   #left-panel {
     order: 2;
     width: 100%;
@@ -338,10 +395,23 @@ html, body {
   }
 
   /* Left-panel grid ordering */
-  #angle-scan-wrap    { order: 1; grid-column: 1 / -1; }
-  #curves-display-box { order: 3; }
-  #export-box         { order: 4; }
-  #params-box         { order: 5; grid-column: 1 / -1; }
+  #angle-scan-wrap {
+    order: 1;
+    grid-column: 1 / -1;
+  }
+
+  #curves-display-box {
+    order: 3;
+  }
+
+  #export-box {
+    order: 4;
+  }
+
+  #params-box {
+    order: 5;
+    grid-column: 1 / -1;
+  }
 
   /* ── Fused angle + scan panel ─────────────────────────────────────────
    * The wrapper becomes the visible panel; the two child boxes dissolve
@@ -368,21 +438,43 @@ html, body {
 
   /* Dissolve child panels → their children become direct grid items */
   #angle-box,
-  #scan-box { display: contents; }
+  #scan-box {
+    display: contents;
+  }
 
   /* Hide desktop-only chrome */
   #angle-box h2,
   #angle-manual-field,
   #btn-stop,
-  #scan-status { display: none; }
+  #scan-status {
+    display: none;
+  }
 
   /* Grid-area placement */
-  #scan-box h2        { grid-area: title; margin-bottom: 0; }
-  .angle-big          { grid-area: angle-val; font-size: 20px; margin: 0;
-                        text-align: left; }
-  #angle-slider-field { grid-area: slider; margin-bottom: 0; }
-  #scan-params        { grid-area: scan-params; }
-  #btn-scan           { grid-area: run-btn; }
+  #scan-box h2 {
+    grid-area: title;
+    margin-bottom: 0;
+  }
+
+  .angle-big {
+    grid-area: angle-val;
+    font-size: 20px;
+    margin: 0;
+    text-align: left;
+  }
+
+  #angle-slider-field {
+    grid-area: slider;
+    margin-bottom: 0;
+  }
+
+  #scan-params {
+    grid-area: scan-params;
+  }
+
+  #btn-scan {
+    grid-area: run-btn;
+  }
 
   /* Scan params: three inline label+input pairs on one row */
   #scan-params {
@@ -408,7 +500,8 @@ html, body {
   #scan-params .field input[type="number"] {
     flex: 1;
     min-width: 0;
-    width: 0;   /* let flex control the width */
+    width: 0;
+    /* let flex control the width */
   }
 
   /* Run button: auto-width, full row height */

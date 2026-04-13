@@ -9,13 +9,12 @@ const API = "";           // same origin — change to "http://localhost:8000" f
 //  Canvas geometry — base values at reference width CW_BASE
 //  All variables are updated proportionally by resizeCanvas().
 // ============================================================
-const CW_BASE    = 700;   // reference canvas width
-// const CH_BASE    = 279;   // reference canvas height — CH = CY + (old CH − old CY)
-const CH_BASE    = 300;   // reference canvas height — CH = CY + (old CH − old CY)
-const CY_BASE    = 100;   // y of flat face — top medium = (CY−GOLD_H)/2 of original
-const R_BASE     = 180;   // half-disk radius at reference size (was 120)
-const GOLD_H_BASE  =  8;  // visual gold thickness at reference (was 7)
-const BEAM_EXT_BASE = 80; // beam extension outside disk at reference (was 70)
+const CW_BASE       = 700;  // reference canvas width
+const CH_BASE       = 300;  // reference canvas height
+const CY_BASE       = 100;  // y of flat face
+const R_BASE        = 180;  // half-disk radius
+const GOLD_H_BASE   =   8;  // visual gold thickness
+const BEAM_EXT_BASE =  80;  // beam extension outside disk
 
 let CW       = CW_BASE;
 let CH       = CH_BASE;
@@ -26,9 +25,47 @@ let GOLD_H   = GOLD_H_BASE;
 let BEAM_EXT = BEAM_EXT_BASE;
 
 // ============================================================
+//  Color palette — single source of truth for canvas and chart
+// ============================================================
+
+// HSL component strings — combine with hsla() for dynamic alpha
+const CHSL_BLUE_400 = "204, 68%, 55%";
+const CHSL_GOLD_500 = "44, 90%, 50%";
+const CHSL_GOLD_700 = "44, 88%, 38%";
+const CHSL_RED_400  = "0, 100%, 71%";
+const CHSL_RED_500  = "0, 100%, 63%";
+const CHSL_WHITE    = "0, 0%, 100%";
+
+// Opaque colors
+const CLR_BLUE_900  = "hsl(204, 72%, 18%)";       // --blue-900
+const CLR_BLUE_800  = "hsl(204, 70%, 27%)";       // --blue-800
+const CLR_BLUE_700  = "hsl(204, 70%, 31%)";       // --blue-700
+const CLR_BLUE_600  = "hsl(204, 73%, 34%)";       // --blue-600
+const CLR_BLUE_400  = `hsl(${CHSL_BLUE_400})`;    // --blue-400
+const CLR_BLUE_200  = "hsl(204, 60%, 82%)";       // --blue-200
+const CLR_GOLD_800  = "hsl(44, 88%, 32%)";        // --gold-800
+const CLR_GOLD_550  = "hsl(44, 90%, 46%)";        // --gold-550
+const CLR_GOLD_500  = `hsl(${CHSL_GOLD_500})`;    // --gold-500
+const CLR_RED_400   = `hsl(${CHSL_RED_400})`;     // --red-400
+const CLR_RED_500   = `hsl(${CHSL_RED_500})`;     // --red-500
+const CLR_WHITE     = "#ffffff";
+const CLR_BLACK     = "#000000";
+
+// Fixed-alpha canvas colors (built from component strings above)
+const CLR_GLASS_FILL   = `hsla(${CHSL_BLUE_400}, 0.32)`;
+const CLR_GLASS_BORDER = `hsla(${CHSL_BLUE_400}, 0.35)`;
+const CLR_NORMAL_LINE  = `hsla(${CHSL_BLUE_400}, 0.30)`;
+const CLR_ARC_STROKE   = `hsla(${CHSL_BLUE_400}, 0.55)`;
+const CLR_LBL_MEDIUM   = `hsla(${CHSL_BLUE_400}, 0.55)`;
+const CLR_LBL_GOLD     = `hsla(${CHSL_GOLD_500}, 0.75)`;
+const CLR_LBL_RED     = `hsla(${CHSL_RED_500}, 0.90)`;
+const CLR_LBL_WHITE    = `hsla(${CHSL_WHITE}, 0.80)`;
+const CLR_LBL_THETA    = `hsla(${CHSL_WHITE}, 0.92)`;
+
+// ============================================================
 //  State
 // ============================================================
-let angle       = 65.0;   // current incidence angle (degrees)
+let angle       = 65.0;
 let lastResult  = { Rp: 0.8, Rs: 1.0, absorption: 0.2, field_intensity: 0.2 };
 let isDragging       = false;
 let isHoveringBeam   = false;
@@ -53,10 +90,6 @@ function resizeCanvas() {
   const s  = w / CW_BASE;
   CW       = w;
   CX       = w / 2;
-  // CH       = Math.round(CH_BASE    * s);
-  // CY       = Math.round(CY_BASE    * s);
-  // R        = Math.round(R_BASE     * s);
-  // GOLD_H   = Math.max(2, Math.round(GOLD_H_BASE   * s));
   CH       = CH_BASE;
   CY       = CY_BASE;
   R        = R_BASE;
@@ -76,7 +109,6 @@ const obsLam       = document.getElementById("obs-lam");
 const rvRp         = document.getElementById("rv-rp");
 const rvRs         = document.getElementById("rv-rs");
 const rvAbs        = document.getElementById("rv-abs");
-const rvField      = document.getElementById("rv-field");
 const btnScan      = document.getElementById("btn-scan");
 const btnStop      = document.getElementById("btn-stop");
 const scanStatus   = document.getElementById("scan-status");
@@ -88,17 +120,17 @@ function chartColors() {
   const dark = document.documentElement.dataset.theme === "dark";
   const css  = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   return dark ? {
-    paper: "hsl(204, 70%, 27%)",    /* --blue-800 = --bg-deep  */
-    plot:  "hsl(204, 72%, 18%)",    /* --blue-900              */
-    font:  "#ffffff",               /* --text-on-deep          */
-    axis:  "hsl(204, 68%, 55%)",    /* --blue-400              */
-    grid:  "hsl(204, 70%, 31%)",    /* --blue-700              */
+    paper: CLR_BLUE_800,
+    plot:  CLR_BLUE_900,
+    font:  CLR_WHITE,
+    axis:  CLR_BLUE_400,
+    grid:  CLR_BLUE_700,
   } : {
-    paper: "hsl(204, 70%, 27%)",    /* --blue-800 — border area */
-    plot:  "#ffffff",               /* white inner plot         */
-    font:  "#000000",               /* black on white plot      */
-    axis:  css("--text-dim"),       /* mirrors CSS --text-dim   */
-    grid:  "hsl(204, 60%, 82%)",    /* --blue-200               */
+    paper: CLR_BLUE_800,
+    plot:  CLR_WHITE,
+    font:  CLR_BLACK,
+    axis:  css("--text-dim"),
+    grid:  CLR_BLUE_200,
   };
 }
 
@@ -132,9 +164,9 @@ function initChart() {
   };
 
   const traces = [
-    { x: [], y: [], name: "Rp (p-pol)",     mode: "lines", line: { color: "hsl(204, 68%, 55%)", width: 2 } },  /* --blue-400 */
-    { x: [], y: [], name: "Rs (s-pol)",     mode: "lines", line: { color: "hsl(0,  100%, 71%)", width: 2 } },  /* --red-400  */
-    { x: [], y: [], name: "Field intensity",mode: "lines", line: { color: "hsl(44,  90%, 50%)", width: 2 } },  /* --gold-500 */
+    { x: [], y: [], name: "Rp (p-pol)",      mode: "lines", line: { color: CLR_BLUE_400, width: 2 } },
+    { x: [], y: [], name: "Rs (s-pol)",      mode: "lines", line: { color: CLR_RED_400,  width: 2 } },
+    { x: [], y: [], name: "Absorption", mode: "lines", line: { color: CLR_GOLD_500, width: 2 } },
   ];
 
   Plotly.newPlot("charts", traces, layout, { responsive: true, displayModeBar: false });
@@ -186,13 +218,9 @@ function draw(theta_deg, result) {
 
 function canvasBgColors() {
   const dark = document.documentElement.dataset.theme === "dark";
-  return dark ? {
-    full:      "hsl(204, 72%, 18%)", /* --blue-900 — prism zone  */
-    topMedium: "hsl(204, 70%, 27%)", /* --blue-800 — medium zone */
-  } : {
-    full:      "hsl(204, 73%, 34%)", /* --blue-600 — prism zone  */
-    topMedium: "hsl(204, 72%, 18%)", /* --blue-900 — medium zone             */
-  };
+  return dark
+    ? { full: CLR_BLUE_900, topMedium: CLR_BLUE_800 }
+    : { full: CLR_BLUE_600, topMedium: CLR_BLUE_900 };
 }
 
 function drawBackground() {
@@ -207,21 +235,20 @@ function drawBackground() {
 function drawTopMediumGlow(fi) {
   if (fi < 0.02) return;
 
-  // Diffuse horizontal glow spreading from the gold layer upward
+  // Diffuse glow spreading from the gold layer upward
   const glowH = 120 * fi;
   const grad = ctx.createLinearGradient(0, CY - GOLD_H, 0, CY - GOLD_H - glowH);
-  grad.addColorStop(0,   `hsla(44, 90%, 50%, ${fi * 0.45})`);  /* --gold-500 */
-  grad.addColorStop(0.4, `hsla(44, 88%, 38%, ${fi * 0.15})`);  /* --gold-700 */
-  grad.addColorStop(1,   "hsla(44, 88%, 38%, 0)");
-
+  grad.addColorStop(0,   `hsla(${CHSL_GOLD_500}, ${fi * 0.45})`);
+  grad.addColorStop(0.4, `hsla(${CHSL_GOLD_700}, ${fi * 0.15})`);
+  grad.addColorStop(1,   `hsla(${CHSL_GOLD_700}, 0)`);
   ctx.fillStyle = grad;
   ctx.fillRect(0, CY - GOLD_H - glowH, CW, glowH);
 
   // Bright core strip right above the gold
   const coreH = 14 * fi;
   const coreGrad = ctx.createLinearGradient(0, CY - GOLD_H, 0, CY - GOLD_H - coreH);
-  coreGrad.addColorStop(0, `hsla(44, 90%, 50%, ${fi * 0.7})`);  /* --gold-500 */
-  coreGrad.addColorStop(1, "hsla(44, 90%, 50%, 0)");
+  coreGrad.addColorStop(0, `hsla(${CHSL_GOLD_500}, ${fi * 0.7})`);
+  coreGrad.addColorStop(1, `hsla(${CHSL_GOLD_500}, 0)`);
   ctx.fillStyle = coreGrad;
   ctx.fillRect(0, CY - GOLD_H - coreH, CW, coreH);
 }
@@ -235,13 +262,13 @@ function drawGlass() {
   ctx.lineTo(CX + R, CY);
   ctx.arc(CX, CY, R, 0, Math.PI);   // 0→π draws the bottom half-circle
   ctx.closePath();
-  ctx.fillStyle = "hsla(204, 68%, 55%, 0.32)";  /* --blue-400 */
+  ctx.fillStyle = CLR_GLASS_FILL;
   ctx.fill();
 
   // Curved border
   ctx.beginPath();
   ctx.arc(CX, CY, R, 0, Math.PI);
-  ctx.strokeStyle = "hsla(204, 68%, 55%, 0.35)";  /* --blue-400 */
+  ctx.strokeStyle = CLR_GLASS_BORDER;
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
@@ -252,20 +279,20 @@ function drawGoldLayer(fi) {
   ctx.save();
 
   // Glow shadow on the gold rect itself
-  ctx.shadowColor = `hsla(44, 90%, 50%, ${fi * 0.9})`;  /* --gold-500 */
+  ctx.shadowColor = `hsla(${CHSL_GOLD_500}, ${fi * 0.9})`;
   ctx.shadowBlur  = 18 + fi * 30;
 
   // Gold rectangle (sits on top of the flat face)
   const grad = ctx.createLinearGradient(0, CY - GOLD_H, 0, CY);
-  grad.addColorStop(0, "hsl(44, 90%, 46%)");   /* --gold-550 */
-  grad.addColorStop(1, "hsl(44, 88%, 32%)");   /* --gold-800 */
+  grad.addColorStop(0, CLR_GOLD_550);
+  grad.addColorStop(1, CLR_GOLD_800);
   ctx.fillStyle = grad;
   ctx.fillRect(CX - R, CY - GOLD_H, 2 * R, GOLD_H);
 
   ctx.shadowBlur = 0;
 
   // Thin bright top edge
-  ctx.strokeStyle = `hsla(44, 90%, 50%, ${0.4 + fi * 0.5})`;  /* --gold-500 */
+  ctx.strokeStyle = `hsla(${CHSL_GOLD_500}, ${0.4 + fi * 0.5})`;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(CX - R, CY - GOLD_H);
@@ -279,7 +306,7 @@ function drawNormal() {
   // Dashed vertical normal line at the hit point
   ctx.save();
   ctx.setLineDash([5, 5]);
-  ctx.strokeStyle = "hsla(204, 68%, 55%, 0.3)";  /* --blue-400 */
+  ctx.strokeStyle = CLR_NORMAL_LINE;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(CX, CY - GOLD_H - 60);
@@ -294,12 +321,12 @@ function drawAngleArc(theta_deg) {
   const arcR  = Math.round(R * 0.3);   // scales with prism radius
 
   ctx.save();
-  ctx.strokeStyle = "hsla(204, 68%, 55%, 0.55)";  /* --blue-400 */
+  ctx.strokeStyle = CLR_ARC_STROKE;
   ctx.lineWidth = 1.5;
 
   // Arc between normal and the incident beam direction
-  const normalAngle = Math.PI / 2;        // pointing up in canvas
-  const beamAngle   = Math.PI / 2 + theta; // pointing down-left
+  const normalAngle = Math.PI / 2;
+  const beamAngle   = Math.PI / 2 + theta;
 
   ctx.beginPath();
   ctx.arc(CX, CY, arcR, normalAngle, beamAngle, false);
@@ -309,7 +336,7 @@ function drawAngleArc(theta_deg) {
   const midAngle = (normalAngle + beamAngle) / 2;
   const lx = CX + (arcR + 12) * Math.cos(midAngle);
   const ly = CY + (arcR + 12) * Math.sin(midAngle);
-  ctx.fillStyle = "hsla(0, 0%, 100%, 0.92)";   /* white — high contrast for θ */
+  ctx.fillStyle = CLR_LBL_THETA;
   ctx.font = "bold 13px 'Segoe UI', sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -340,10 +367,11 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
   ctx.save();
 
   // --- Incident beam ---
-  const beamColor = grabbed ? "hsl(0, 100%, 71%)" : "hsl(0, 100%, 63%)";  /* --red-400 / --red-500 */
-  ctx.shadowColor = grabbed ? "hsla(0, 100%, 71%, 0.9)" : "hsla(0, 100%, 63%, 0.6)";
+  const beamHSL   = grabbed ? CHSL_RED_400 : CHSL_RED_500;
+  const beamAlpha = grabbed ? 0.9 : 0.6;
+  ctx.shadowColor = `hsla(${beamHSL}, ${beamAlpha})`;
   ctx.shadowBlur  = grabbed ? 18 : 8;
-  ctx.strokeStyle = beamColor;
+  ctx.strokeStyle = `hsl(${beamHSL})`;
   ctx.lineWidth   = grabbed ? 3.5 : 2.5;
   ctx.beginPath();
   ctx.moveTo(sx, sy);
@@ -355,9 +383,9 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
   // --- Reflected beam ---
   const reflAlpha = 0.35 + Rp * 0.65;  // dimmer at resonance
   ctx.setLineDash([6, 5]);
-  ctx.strokeStyle = `hsla(0, 100%, 71%, ${reflAlpha})`;   /* --red-400 */
+  ctx.strokeStyle = `hsla(${CHSL_RED_400}, ${reflAlpha})`;
   ctx.lineWidth   = 2;
-  ctx.shadowColor = `hsla(0, 100%, 63%, ${reflAlpha * 0.5})`;  /* --red-500 */
+  ctx.shadowColor = `hsla(${CHSL_RED_500}, ${reflAlpha * 0.5})`;
   ctx.shadowBlur  = 5;
   ctx.beginPath();
   ctx.moveTo(CX, CY);
@@ -366,12 +394,11 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
   ctx.setLineDash([]);
   ctx.shadowBlur = 0;
 
-  // --- _arrowHead ---
+  // --- Arrow on reflected ray tip ---
   const L = 15, W = 5;
-  // ctx.save();
   ctx.translate(rx2, ry2);
-  ctx.rotate(Math.PI/2-theta);
-  ctx.fillStyle = beamColor;
+  ctx.rotate(Math.PI / 2 - theta);
+  ctx.fillStyle = `hsl(${beamHSL})`;
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.lineTo(-L, W);
@@ -382,31 +409,28 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
   ctx.restore();
 }
 
-
 function drawLabels(theta_deg) {
-  // const fontSize = Math.max(10, Math.round(12 * CW / CW_BASE));
   const fontSize = 16;
   ctx.save();
   ctx.font = `${fontSize}px 'Segoe UI', sans-serif`;
 
-  // Top medium label — upper part of the top-medium zone
-  ctx.fillStyle = "hsla(204, 68%, 55%, 0.55)";  /* --blue-400 */
+  // Top medium label
+  ctx.fillStyle = CLR_LBL_MEDIUM;
   ctx.textAlign = "left";
   ctx.fillText("Top medium (n = " + _paramVal("top-n") + ")", 10, 16);
 
   // Gold label
-  ctx.fillStyle = "hsla(44, 90%, 50%, 0.75)";   /* --gold-500 */
+  ctx.fillStyle = CLR_LBL_GOLD;
   ctx.textAlign = "left";
   ctx.fillText("Au  " + _paramVal("gold-nm") + " nm", 10, CY - GOLD_H - 5);
 
   // Glass label (inside half-disk)
-  ctx.fillStyle = "hsla(0, 0%, 100%, 0.80)";    /* white — better contrast */
+  ctx.fillStyle = CLR_LBL_WHITE;
   ctx.textAlign = "center";
   ctx.fillText("Glass  n = " + _paramVal("prism-n"), CX, CY + R * 0.75);
 
-  // λ label (bottom-right of diagram)
-  // ctx.fillStyle = "hsla(204, 68%, 55%, 0.4)";   /* --blue-400 */
-  ctx.fillStyle = "hsla(0, 0%, 100%, 0.80)";    /* white — better contrast */
+  // λ label (bottom-right)
+  ctx.fillStyle = CLR_LBL_RED;
   ctx.textAlign = "right";
   ctx.fillText("λ = " + _paramVal("lam-nm") + " nm", CW - 8, CH - 6);
 
@@ -438,10 +462,9 @@ async function fetchCalculate(a) {
 }
 
 function updateReadout(result) {
-  rvRp.textContent    = result.Rp.toFixed(3);
-  rvRs.textContent    = result.Rs.toFixed(3);
-  rvAbs.textContent   = result.absorption.toFixed(3);
-  rvField.textContent = result.field_intensity.toFixed(3);
+  rvRp.textContent  = result.Rp.toFixed(3);
+  rvRs.textContent  = result.Rs.toFixed(3);
+  rvAbs.textContent = result.absorption.toFixed(3);
 }
 
 // ============================================================
@@ -490,7 +513,6 @@ function interpolateResult(a) {
 //  Angle update
 // ============================================================
 function setAngleUI(a) {
-  // angle = Math.max(5, Math.min(85, a));
   angle = Math.max(0, Math.min(90, a));
   const disp = angle.toFixed(1);
   angleDisplay.textContent = disp;
@@ -618,15 +640,12 @@ function handleMouse(e) {
 function handleTouch(e) {
   if (!e.touches.length) return;
   const rect  = canvas.getBoundingClientRect();
-  const scaleX = CW / rect.width;
-  const scaleY = CH / rect.height;
-  const mx = (e.touches[0].clientX - rect.left) * scaleX;
-  const my = (e.touches[0].clientY - rect.top)  * scaleY;
+  const mx = (e.touches[0].clientX - rect.left) * (CW / rect.width);
+  const my = (e.touches[0].clientY - rect.top)  * (CH / rect.height);
   angleFromCursor(mx, my);
 }
 
 function angleFromCursor(mx, my) {
-  // dy is positive when the cursor is below the flat face (inside the glass)
   const dy = my - CY;
   if (dy <= 0) return;   // cursor is above or on the flat face — nothing to do
   const theta = Math.atan2(Math.abs(CX - mx), dy) * (180 / Math.PI);

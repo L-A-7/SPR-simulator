@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,154 +9,154 @@
   <link rel="stylesheet" href="base.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-<div id="app">
+  <div id="app">
 
-  <!-- ── Content row: left panel + main column ─────────────────── -->
-  <div id="content-row">
+    <!-- ── Content row: left panel + main column ─────────────────── -->
+    <div id="content-row">
 
-    <!-- ── Left panel ───────────────────────────────────────────── -->
-    <div id="left-panel">
+      <!-- ── Left panel ───────────────────────────────────────────── -->
+      <div id="left-panel">
 
-      <div class="panel-box" id="params-box">
-        <h2>Parameters</h2>
-        <div class="field">
-          <label>λ (nm)</label>
-          <input type="number" id="lam-nm" value="632.8" min="400" max="1100" step="0.1" />
+        <div class="panel-box" id="params-box">
+          <h2>Parameters</h2>
+          <div class="field">
+            <label>λ (nm)</label>
+            <input type="number" id="lam-nm" value="632.8" min="400" max="1100" step="0.1" />
+          </div>
+          <div class="field">
+            <label>Gold thickness (nm)</label>
+            <input type="number" id="gold-nm" value="50" min="1" max="200" step="1" />
+          </div>
+          <div class="field">
+            <label>Prism n</label>
+            <input type="number" id="prism-n" value="1.63" min="1.4" max="2.0" step="0.001" />
+          </div>
+          <div class="field">
+            <label>Top medium n</label>
+            <input type="number" id="top-n" value="1.333" min="1.0" max="1.8" step="0.001" />
+          </div>
         </div>
-        <div class="field">
-          <label>Gold thickness (nm)</label>
-          <input type="number" id="gold-nm" value="50" min="1" max="200" step="1" />
-        </div>
-        <div class="field">
-          <label>Prism n</label>
-          <input type="number" id="prism-n" value="1.63" min="1.4" max="2.0" step="0.001" />
-        </div>
-        <div class="field">
-          <label>Top medium n</label>
-          <input type="number" id="top-n" value="1.333" min="1.0" max="1.8" step="0.001" />
-        </div>
-      </div>
 
-      <!-- angle-scan-wrap: two separate boxes on desktop,
+        <!-- angle-scan-wrap: two separate boxes on desktop,
            fused into one 2-row panel on mobile              -->
-      <div id="angle-scan-wrap">
+        <div id="angle-scan-wrap">
 
-        <div class="panel-box" id="angle-box">
-          <h2>Angle</h2>
-          <div class="angle-big"><span id="angle-display">65.0</span>°</div>
-          <div class="field" id="angle-slider-field">
-            <input type="range" id="angle-slider"
-                   min="5" max="85" step="0.5" value="65" />
-          </div>
-          <div class="field" id="angle-manual-field">
-            <label>Manual entry (°)</label>
-            <input type="number" id="angle-input"
-                   min="5" max="85" step="0.1" value="65" />
-          </div>
-        </div>
-
-        <div class="panel-box" id="scan-box">
-          <h2>Angle Scan</h2>
-          <div id="scan-params">
-            <div class="field">
-              <label>From (°)</label>
-              <input type="number" id="scan-min" value="35" min="0" max="89" step="1" />
+          <div class="panel-box" id="angle-box">
+            <h2>Angle</h2>
+            <div class="angle-big"><span id="angle-display">65.0</span>°</div>
+            <div class="field" id="angle-slider-field">
+              <input type="range" id="angle-slider" min="5" max="85" step="0.5" value="65" />
             </div>
-            <div class="field">
-              <label>To (°)</label>
-              <input type="number" id="scan-max" value="80" min="1" max="89" step="1" />
-            </div>
-            <div class="field">
-              <label>Steps</label>
-              <input type="number" id="scan-steps" value="150" min="20" max="500" step="10" />
+            <div class="field" id="angle-manual-field">
+              <label>Manual entry (°)</label>
+              <input type="number" id="angle-input" min="5" max="85" step="0.1" value="65" />
             </div>
           </div>
-          <button class="btn btn-scan" id="btn-scan">▶ Run Scan</button>
-          <button class="btn btn-stop" id="btn-stop">■ Stop</button>
-          <div id="scan-status"></div>
-        </div>
 
-      </div><!-- /angle-scan-wrap -->
-
-      <!-- Placeholder panels — future use -->
-      <div class="panel-box placeholder-panel" id="curves-display-box">
-        <h2>Curves Display</h2>
-      </div>
-
-      <div class="panel-box placeholder-panel" id="export-box">
-        <h2>Export</h2>
-      </div>
-
-    </div><!-- /left-panel -->
-
-    <!-- ── Main column ──────────────────────────────────────────── -->
-    <div id="main-col">
-
-      <!-- Observable bar + canvas -->
-      <div id="main-anim-box">
-
-        <div id="obs-bar">
-          <div id="obs-items">
-            <span id="obs-title">SPR Simulator</span>
-            <span class="obs-sep">|</span>
-            <span class="obs-item">
-              <span class="obs-lbl">θ</span>
-              <span class="obs-val obs-theta" id="obs-theta">65.0</span><span class="obs-unit">°</span>
-            </span>
-            <span class="obs-sep">|</span>
-            <span class="obs-item">
-              <span class="obs-lbl">λ</span>
-              <span class="obs-val" id="obs-lam">632.8</span><span class="obs-unit"> nm</span>
-            </span>
-            <span class="obs-sep">|</span>
-            <span class="obs-item">
-              <span class="obs-lbl">Rp</span>
-              <span class="obs-val rv-rp" id="rv-rp">—</span>
-            </span>
-            <span class="obs-sep">|</span>
-            <span class="obs-item">
-              <span class="obs-lbl">Rs</span>
-              <span class="obs-val rv-rs" id="rv-rs">—</span>
-            </span>
-            <span class="obs-sep">|</span>
-            <span class="obs-item">
-              <span class="obs-lbl">Absorption</span>
-              <span class="obs-val rv-abs" id="rv-abs">—</span>
-            </span>
-            <span class="obs-sep">|</span>
-            <span class="obs-item">
-              <span class="obs-lbl">Field enh.</span>
-              <span class="obs-val rv-field" id="rv-field">—</span>
-            </span>
+          <div class="panel-box" id="scan-box">
+            <h2>Angle Scan</h2>
+            <div id="scan-params">
+              <div class="field">
+                <label>From (°)</label>
+                <input type="number" id="scan-min" value="35" min="0" max="89" step="1" />
+              </div>
+              <div class="field">
+                <label>To (°)</label>
+                <input type="number" id="scan-max" value="80" min="1" max="89" step="1" />
+              </div>
+              <div class="field">
+                <label>Steps</label>
+                <input type="number" id="scan-steps" value="150" min="20" max="500" step="10" />
+              </div>
+            </div>
+            <button class="btn btn-scan" id="btn-scan">▶ Run Scan</button>
+            <button class="btn btn-stop" id="btn-stop">■ Stop</button>
+            <div id="scan-status"></div>
           </div>
-          <button id="theme-toggle" title="Toggle light / dark theme">☽</button>
+
+        </div><!-- /angle-scan-wrap -->
+
+        <!-- Placeholder panels — future use -->
+        <div class="panel-box placeholder-panel" id="curves-display-box">
+          <h2>Curves Display</h2>
         </div>
 
-        <div id="canvas-wrap">
-          <canvas id="diagram" width="700" height="279"></canvas>
+        <div class="panel-box placeholder-panel" id="export-box">
+          <h2>Export</h2>
         </div>
 
-      </div>
+      </div><!-- /left-panel -->
 
-      <!-- Curves 1 — scan results -->
-      <div id="charts-panel">
-        <h2>Scan Results</h2>
-        <div id="charts"></div>
-      </div>
+      <!-- ── Main column ──────────────────────────────────────────── -->
+      <div id="main-col">
 
-      <!-- Curves 2 — placeholder -->
-      <div class="panel-box placeholder-panel" id="curves-2-panel">
-        <h2>Curves 2</h2>
-      </div>
+        <!-- Observable bar + canvas -->
+        <div id="main-anim-box">
 
-    </div><!-- /main-col -->
+          <div id="obs-bar">
+            <div id="obs-items">
+              <span id="obs-title">SPR Simulator</span>
+              <span class="obs-sep">|</span>
+              <span class="obs-item">
+                <span class="obs-lbl">θ</span>
+                <span class="obs-val obs-theta" id="obs-theta">65.0</span><span class="obs-unit">°</span>
+              </span>
+              <span class="obs-sep">|</span>
+              <span class="obs-item">
+                <span class="obs-lbl">λ</span>
+                <span class="obs-val" id="obs-lam">632.8</span><span class="obs-unit"> nm</span>
+              </span>
+              <span class="obs-sep">|</span>
+              <span class="obs-item">
+                <span class="obs-lbl">Rp</span>
+                <span class="obs-val rv-rp" id="rv-rp">—</span>
+              </span>
+              <span class="obs-sep">|</span>
+              <span class="obs-item">
+                <span class="obs-lbl">Rs</span>
+                <span class="obs-val rv-rs" id="rv-rs">—</span>
+              </span>
+              <span class="obs-sep">|</span>
+              <span class="obs-item">
+                <span class="obs-lbl">Abs.</span>
+                <span class="obs-val rv-abs" id="rv-abs">—</span>
+              </span>
+              <!-- <span class="obs-sep">|</span> -->
+              <!-- <span class="obs-item"> -->
+              <!-- <span class="obs-lbl">Field enh.</span> -->
+              <!-- <span class="obs-val rv-field" id="rv-field">—</span> -->
+              <!-- </span> -->
+            </div>
+            <button id="theme-toggle" title="Toggle light / dark theme">☽</button>
+          </div>
 
-  </div><!-- /content-row -->
+          <div id="canvas-wrap">
+            <canvas id="diagram" width="700" height="279"></canvas>
+          </div>
 
-</div><!-- /app -->
+        </div>
 
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-<script src="app.js"></script>
+        <!-- Curves 1 — scan results -->
+        <div id="charts-panel">
+          <h2>Scan Results</h2>
+          <div id="charts"></div>
+        </div>
+
+        <!-- Curves 2 — placeholder -->
+        <div class="panel-box placeholder-panel" id="curves-2-panel">
+          <h2>Curves 2</h2>
+        </div>
+
+      </div><!-- /main-col -->
+
+    </div><!-- /content-row -->
+
+  </div><!-- /app -->
+
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>

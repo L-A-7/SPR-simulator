@@ -115,6 +115,10 @@ const btnStop      = document.getElementById("btn-stop");
 const btnExport    = document.getElementById("btn-export");
 const scanStatus   = document.getElementById("scan-status");
 
+// Disable Plotly drag-to-zoom/pan on touch devices to avoid accidental
+// axis rescaling while scrolling the page.
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
 // ============================================================
 //  Plotly chart
 // ============================================================
@@ -162,6 +166,7 @@ function initChart() {
       bordercolor: c.grid,
     },
     hovermode: "x unified",
+    dragmode: isTouchDevice ? false : "zoom",
     showlegend: true,
   };
 
@@ -202,6 +207,7 @@ function initChart2() {
       bordercolor: c.grid,
     },
     hovermode: "x unified",
+    dragmode: isTouchDevice ? false : "zoom",
     showlegend: true,
   };
 

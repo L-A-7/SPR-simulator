@@ -93,7 +93,9 @@ function resizeCanvas() {
   CX       = w / 2;
   CH       = CH_BASE;
   CY       = CY_BASE;
-  R        = R_BASE;
+  // Cap R so the glass occupies at most 80 % of canvas width on narrow screens.
+  // On desktop (700 px) R_BASE=180 < 0.4×700=280, so desktop is unchanged.
+  R        = Math.round(Math.min(R_BASE, 0.4 * w));
   GOLD_H   = GOLD_H_BASE;
   BEAM_EXT = Math.round(BEAM_EXT_BASE * s);
   canvas.width  = CW;
@@ -142,11 +144,12 @@ function chartColors() {
 
 function initChart() {
   const c = chartColors();
+  const mobile = window.innerWidth <= 700;
   const layout = {
     paper_bgcolor: c.paper,
     plot_bgcolor:  c.plot,
     font:          { color: c.font, size: 11 },
-    margin:        { t: 10, r: 20, b: 40, l: 50 },
+    margin:        mobile ? { t: 6, r: 0, b: 32, l: 20 } : { t: 10, r: 20, b: 40, l: 50 },
     xaxis: {
       title: "Angle (°)",
       color: c.axis,
@@ -154,7 +157,7 @@ function initChart() {
       zeroline: false,
     },
     yaxis: {
-      title: "Value",
+      title: mobile ? "" : "Value",
       range: [-0.05, 1.05],
       color: c.axis,
       gridcolor: c.grid,
@@ -182,11 +185,12 @@ function initChart() {
 
 function initChart2() {
   const c = chartColors();
+  const mobile = window.innerWidth <= 700;
   const layout = {
     paper_bgcolor: c.paper,
     plot_bgcolor:  c.plot,
     font:          { color: c.font, size: 11 },
-    margin:        { t: 10, r: 20, b: 40, l: 50 },
+    margin:        mobile ? { t: 6, r: 0, b: 32, l: 20 } : { t: 10, r: 20, b: 40, l: 50 },
     xaxis: {
       title: "Angle (°)",
       color: c.axis,
@@ -194,7 +198,7 @@ function initChart2() {
       zeroline: false,
     },
     yaxis: {
-      title: "Phase (°)",
+      title: mobile ? "" : "Phase (°)",
       range: [-185, 185],
       color: c.axis,
       gridcolor: c.grid,

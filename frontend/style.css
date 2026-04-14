@@ -285,12 +285,6 @@ body {
 #canvas-wrap {
   cursor: crosshair;
   background: var(--canvas-bg);
-  position: relative;
-}
-
-/* Hidden everywhere by default; shown only on mobile via media query */
-#btn-scan-canvas {
-  display: none;
 }
 
 #diagram {
@@ -458,17 +452,6 @@ body {
 
 /* ===== Mobile layout ===================================================== */
 @media (max-width: 700px) {
-  /* Canvas-overlay Run Scan button */
-  #btn-scan-canvas {
-    display: block;
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: auto;
-    padding: 6px 12px;
-    font-size: 11px;
-  }
-
   #app {
     padding: 6px;
     gap: 8px;

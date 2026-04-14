@@ -69,7 +69,6 @@ let angle       = 65.0;
 let lastResult  = { Rp: 0.8, Rs: 1.0, absorption: 0.2, field_intensity: 0.2 };
 let isDragging       = false;
 let isHoveringBeam   = false;
-let beamGrabbed      = false;   // becomes true after first grab; hides the hint
 let fetchTimer  = null;
 let scanWS      = null;
 let scanData    = { angles: [], Rp: [], Rs: [], field: [], delta_s: [], delta_p: [] };
@@ -113,11 +112,10 @@ const obsLam       = document.getElementById("obs-lam");
 const rvRp         = document.getElementById("rv-rp");
 const rvRs         = document.getElementById("rv-rs");
 const rvAbs        = document.getElementById("rv-abs");
-const btnScan       = document.getElementById("btn-scan");
-const btnStop       = document.getElementById("btn-stop");
-const btnExport     = document.getElementById("btn-export");
-const btnScanCanvas = document.getElementById("btn-scan-canvas");
-const scanStatus    = document.getElementById("scan-status");
+const btnScan      = document.getElementById("btn-scan");
+const btnStop      = document.getElementById("btn-stop");
+const btnExport    = document.getElementById("btn-export");
+const scanStatus   = document.getElementById("scan-status");
 
 // Disable Plotly drag-to-zoom/pan on touch devices to avoid accidental
 // axis rescaling while scrolling the page.
@@ -459,22 +457,6 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
 
   ctx.shadowBlur = 0;
 
-  // --- "Grab me" hint along the incident beam ---
-  if (!beamGrabbed) {
-    const midX = (sx + CX) / 2;
-    const midY = (sy + CY) / 2;
-    const beamDir = Math.atan2(CY - sy, CX - sx);
-    ctx.save();
-    ctx.translate(midX, midY);
-    ctx.rotate(beamDir);
-    ctx.font = "bold 11px 'Segoe UI', sans-serif";
-    ctx.fillStyle = `hsla(${CHSL_RED_400}, 0.85)`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "bottom";
-    ctx.fillText("(Grab me)", 0, -7);
-    ctx.restore();
-  }
-
   // --- Reflected beam ---
   const reflAlpha = 0.35 + Rp * 0.65;  // dimmer at resonance
   ctx.setLineDash([6, 5]);
@@ -524,12 +506,10 @@ function drawLabels(theta_deg) {
   ctx.textAlign = "center";
   ctx.fillText("Glass  n = " + _paramVal("prism-n"), CX, CY + R * 0.75);
 
-  // λ label (bottom-right) — hidden on mobile to leave room for the canvas Run Scan button
-  if (window.innerWidth > 700) {
-    ctx.fillStyle = CLR_LBL_GOLD;
-    ctx.textAlign = "right";
-    ctx.fillText("λ = " + _paramVal("lam-nm") + " nm", CW - 8, CH - 6);
-  }
+  // λ label (bottom-right)
+  ctx.fillStyle = CLR_LBL_GOLD;
+  ctx.textAlign = "right";
+  ctx.fillText("λ = " + _paramVal("lam-nm") + " nm", CW - 8, CH - 6);
 
   ctx.restore();
 }
@@ -676,7 +656,6 @@ canvas.addEventListener("mousedown", (e) => {
   const { mx, my } = _canvasCoords(e);
   if (_nearIncidentBeam(mx, my)) {
     isDragging = true;
-    beamGrabbed = true;
     canvas.style.cursor = "grabbing";
     angleFromCursor(mx, my);
   }
@@ -719,7 +698,6 @@ canvas.addEventListener("touchstart", (e) => {
   const my = (e.touches[0].clientY - rect.top)  * (CH / rect.height);
   if (_nearIncidentBeam(mx, my)) {
     isDragging = true;
-    beamGrabbed = true;
     angleFromCursor(mx, my);
   }
 }, { passive: true });
@@ -780,7 +758,6 @@ angleInput.addEventListener("change", () => {
 //  Scan
 // ============================================================
 btnScan.addEventListener("click", startScan);
-btnScanCanvas.addEventListener("click", startScan);
 btnStop.addEventListener("click", stopScan);
 
 function startScan() {
@@ -789,7 +766,6 @@ function startScan() {
   resetChart();
   setChart2RangeFromLookup();
   btnScan.style.display = "none";
-  btnScanCanvas.style.display = "none";
   btnStop.style.display = "block";
   btnExport.style.display = "none";
   scanStatus.textContent = "Scanning…";
@@ -858,7 +834,6 @@ function finishScan(msg) {
   scanWS = null;
   btnStop.style.display = "none";
   btnScan.style.display = "block";
-  btnScanCanvas.style.display = "";   // let CSS media query decide visibility
   scanStatus.textContent = msg;
   if (scanData.angles.length) btnExport.style.display = "block";
 }

@@ -25,12 +25,12 @@
   --text-dim: var(--blue-400);
   --input-bg: var(--blue-900);
   --input-text: var(--text-on-deep);
-  --obs-bar-bg: transparent;
+  --obs-bar-bg: var(--blue-800);
   --obs-bar-border: var(--blue-700);
   --obs-text: var(--text-on-deep);
   --obs-dim: var(--blue-400);
   --obs-sep-color: var(--blue-700);
-  --canvas-bg: transparent;
+  --canvas-bg: var(--panel);
 }
 
 /* Keep Run Scan button, angle value and angle slider gold in dark theme */
@@ -62,7 +62,7 @@
   --obs-text: var(--text-on-deep);
   --obs-dim: hsla(0, 0%, 100%, 0.60);
   --obs-sep-color: hsla(0, 0%, 100%, 0.25);
-  --canvas-bg: var(--blue-600);
+  --canvas-bg: var(--panel);
 }
 
 html,
@@ -164,42 +164,25 @@ body {
   color: var(--gold-700);
 }
 
-/* ===== Coloured parameter labels ======================================== */
-#params-box .lbl-lambda {
-  color: var(--red-400);
-}
-
-#params-box .lbl-hgold {
-  color: var(--gold-500);
-}
-
 /* ===== n-gold complex input group ======================================= */
 .ngold-group {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 0;
-  /* last item — no extra gap needed */
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 0;   /* last item — no extra gap needed */
+}
+
+.ngold-lbl {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
 }
 
 .ngold-box {
-  flex: 1;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 3px;
-  border: 1.5px solid var(--gold-500);
-  border-radius: 5px;
-  padding: 2px 4px;
-}
-
-.ngold-box>label {
-  font-size: 11px;
-  color: var(--gold-500);
-  white-space: nowrap;
-  flex-shrink: 0;
-  padding-right: 2px;
 }
 
 .ngold-box input[type="number"] {
@@ -216,12 +199,12 @@ body {
 
 .ngold-box input[type="number"]:focus {
   outline: none;
-  border-color: var(--gold-500);
+  border-color: var(--accent);
 }
 
 .ngold-sep {
   flex-shrink: 0;
-  color: var(--gold-500);
+  color: var(--text-dim);
   font-size: 11px;
   font-weight: 700;
 }
@@ -538,13 +521,28 @@ body {
     grid-column: span 2;
   }
 
-  /* Slightly smaller text inside the gold border on mobile */
-  #params-box .ngold-box>label {
+  /* Restore coloured labels and gold border on mobile */
+  #params-box .lbl-lambda { color: var(--red-400); }
+  #params-box .lbl-hgold  { color: var(--gold-500); }
+
+  #params-box .ngold-lbl {
     font-size: 10px;
+    color: var(--gold-500);
   }
 
   #params-box .ngold-sep {
     font-size: 10px;
+    color: var(--gold-500);
+  }
+
+  #params-box .ngold-box {
+    border: 1.5px solid var(--gold-500);
+    border-radius: 5px;
+    padding: 2px 4px;
+  }
+
+  #params-box .ngold-box input[type="number"]:focus {
+    border-color: var(--gold-500);
   }
 
   /* ── Fused angle + scan panel ─────────────────────────────────────────

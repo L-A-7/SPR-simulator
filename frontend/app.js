@@ -294,10 +294,9 @@ function draw(theta_deg, result) {
 }
 
 function canvasBgColors() {
-  const dark = document.documentElement.dataset.theme === "dark";
-  return dark
-    ? { full: CLR_BLUE_900, topMedium: CLR_BLUE_800 }
-    : { full: CLR_BLUE_600, topMedium: CLR_BLUE_900 };
+  // full = analyte zone (bottom): matches panel-box background (--bg-deep)
+  // topMedium = prism zone (top): one step darker for visual contrast
+  return { full: CLR_BLUE_800, topMedium: CLR_BLUE_900 };
 }
 
 function drawBackground() {

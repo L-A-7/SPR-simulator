@@ -165,8 +165,13 @@ body {
 }
 
 /* ===== Coloured parameter labels ======================================== */
-#params-box .lbl-lambda { color: var(--red-400); }
-#params-box .lbl-hgold  { color: var(--gold-500); }
+#params-box .lbl-lambda {
+  color: var(--red-400);
+}
+
+#params-box .lbl-hgold {
+  color: var(--gold-500);
+}
 
 /* ===== n-gold complex input group ======================================= */
 .ngold-group {
@@ -174,7 +179,8 @@ body {
   flex-direction: row;
   align-items: center;
   gap: 5px;
-  margin-bottom: 0;   /* last item — no extra gap needed */
+  margin-bottom: 0;
+  /* last item — no extra gap needed */
 }
 
 .ngold-box {
@@ -188,7 +194,7 @@ body {
   padding: 2px 4px;
 }
 
-.ngold-box > label {
+.ngold-box>label {
   font-size: 11px;
   color: var(--gold-500);
   white-space: nowrap;
@@ -453,40 +459,48 @@ body {
 /* ===== Mobile layout ===================================================== */
 @media (max-width: 700px) {
   #app {
-    padding: 6px;
-    gap: 8px;
+    padding: 6px 4px;
+    gap: 4px;
   }
 
-  /* Stack the two columns */
+  /* Stack all panels vertically, stretch each to full width */
   #content-row {
     flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
   }
 
-  /* Canvas column comes first, controls column after */
+  /* Dissolve the two column wrappers so their children become direct
+     siblings inside #content-row — enabling individual panel reordering. */
+  #left-panel,
   #main-col {
+    display: contents;
+  }
+
+  /* Individual panel order: canvas → angle-scan → charts → phase → params */
+  #main-anim-box {
     order: 1;
-    width: 100%;
   }
 
-  #left-panel {
-    order: 2;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  /* Left-panel grid ordering */
   #angle-scan-wrap {
-    order: 1;
-    grid-column: 1 / -1;
+    order: 2;
+  }
+
+  #charts-panel {
+    order: 3;
+  }
+
+  #curves-2-panel {
+    order: 4;
+  }
+
+  #params-box {
+    order: 5;
   }
 
   /* 3×2 grid on mobile. Each .field is a flex row:
      label left-aligned, 4 px gap, input fills the rest. */
   #params-box {
-    order: 5;
-    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 6px 8px;
@@ -525,7 +539,7 @@ body {
   }
 
   /* Slightly smaller text inside the gold border on mobile */
-  #params-box .ngold-box > label {
+  #params-box .ngold-box>label {
     font-size: 10px;
   }
 

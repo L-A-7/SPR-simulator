@@ -69,6 +69,7 @@ let angle       = 65.0;
 let lastResult  = { Rp: 0.8, Rs: 1.0, absorption: 0.2, field_intensity: 0.2 };
 let isDragging       = false;
 let isHoveringBeam   = false;
+let beamGrabbed      = false;   // becomes true after first grab; hides the hint
 let fetchTimer  = null;
 let scanWS      = null;
 let scanData    = { angles: [], Rp: [], Rs: [], field: [], delta_s: [], delta_p: [] };
@@ -458,6 +459,22 @@ function drawLaserBeam(theta_deg, Rp, grabbed = false) {
 
   ctx.shadowBlur = 0;
 
+  // --- "Grab me" hint along the incident beam ---
+  if (!beamGrabbed) {
+    const midX = (sx + CX) / 2;
+    const midY = (sy + CY) / 2;
+    const beamDir = Math.atan2(CY - sy, CX - sx);
+    ctx.save();
+    ctx.translate(midX, midY);
+    ctx.rotate(beamDir);
+    ctx.font = "bold 11px 'Segoe UI', sans-serif";
+    ctx.fillStyle = `hsla(${CHSL_RED_400}, 0.85)`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillText("(Grab me)", 0, -7);
+    ctx.restore();
+  }
+
   // --- Reflected beam ---
   const reflAlpha = 0.35 + Rp * 0.65;  // dimmer at resonance
   ctx.setLineDash([6, 5]);
@@ -659,6 +676,7 @@ canvas.addEventListener("mousedown", (e) => {
   const { mx, my } = _canvasCoords(e);
   if (_nearIncidentBeam(mx, my)) {
     isDragging = true;
+    beamGrabbed = true;
     canvas.style.cursor = "grabbing";
     angleFromCursor(mx, my);
   }
@@ -701,6 +719,7 @@ canvas.addEventListener("touchstart", (e) => {
   const my = (e.touches[0].clientY - rect.top)  * (CH / rect.height);
   if (_nearIncidentBeam(mx, my)) {
     isDragging = true;
+    beamGrabbed = true;
     angleFromCursor(mx, my);
   }
 }, { passive: true });
